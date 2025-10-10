@@ -40,6 +40,9 @@
               <input type="text" class="form-control" name="ajentCode" value="{{ $editAjent->ajentCode }}" autocomplete="off">
             </div>
 
+
+            
+
             <div class="col-md-6">
               <label class="form-label">Ajent Name</label>
               <input type="text" class="form-control" name="ajentName" value="{{ $editAjent->ajentName }}" autocomplete="off">
