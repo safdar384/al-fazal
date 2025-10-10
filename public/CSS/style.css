@@ -1,0 +1,28 @@
+        body { background-color: #c4ceff; }
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: #001ba3;
+            color: white;
+            position: fixed;
+            overflow-y: auto;
+        }
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 12px 20px;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background-color: #fcad03;
+            color: #001ba3;
+        }
+        .submenu a {
+            padding-left: 40px;
+            font-size: 0.9rem;
+        }
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+    
