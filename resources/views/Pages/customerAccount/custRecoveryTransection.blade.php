@@ -109,7 +109,7 @@
                           </div>
                         </div>
                       </form>
-                        <table class="table table-bordered table-hover" id="ajentTable">
+                        <table class="table table-bordered table-hover" id="agentTable">
                           <thead class="table-primary">
                               <tr>
                                   <th>ID</th>
@@ -286,7 +286,7 @@
                   } else {
                       rows = `<tr><td colspan="6" class="text-center">No record found for today</td></tr>`;
                   }
-                  $('#ajentTable tbody').html(rows);
+                  $('#agentTable tbody').html(rows);
               }
           });
       }
@@ -348,7 +348,7 @@
 
         // --- If cleared ---
         $('#slectArea').on('select2:clear', function () {
-            $('#ajentTable tbody').html('<tr><td colspan="6" class="text-center">No record found</td></tr>');
+            $('#agentTable tbody').html('<tr><td colspan="6" class="text-center">No record found</td></tr>');
         });
 
 

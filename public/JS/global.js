@@ -53,3 +53,30 @@ function showConfirm(options) {
     // Show modal
     new bootstrap.Modal(document.getElementById('confirmModal')).show();
 }
+
+/**
+ * Show delete confirmation using SweetAlert2
+ * @param {string} formId - ID of the form to submit
+ * @param {string} title - Modal title (optional)
+ * @param {string} message - Confirmation message (optional)
+ */
+function confirmDelete(formId, title = 'Delete Confirmation', message = 'Are you sure you want to delete this item?') {
+    Swal.fire({
+        title: title,
+        text: message,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: '<i class="bi bi-trash3 me-1"></i> Yes, Delete',
+        cancelButtonText: '<i class="bi bi-x-circle me-1"></i> Cancel',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const form = document.getElementById(formId);
+            if (form) {
+                form.submit();
+            }
+        }
+    });
+}

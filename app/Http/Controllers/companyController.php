@@ -17,16 +17,12 @@ class CompanyController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'companyName' => 'required|unique:product_company|max:255' // or "Company" if plural
+            'companyName' => 'required|unique:product_company|max:255'
         ]);
 
-        $company = ProductCompany::create($validated);
-        
+        ProductCompany::create($validated);
 
-        return response()->json(['success' => true, 'company' => $company]); // Company
-        
-
-
+        return redirect()->route('product.create')->with('success', 'Company added successfully!');
     }
 
     public function destroy($id)

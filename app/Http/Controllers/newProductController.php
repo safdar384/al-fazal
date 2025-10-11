@@ -1,107 +1,116 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\newProduct;
 use App\Models\Colour;
 use App\Models\Catagory;
-use App\Models\companyController;
 use App\Models\productCompany;
 use App\Models\packing;
-
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
+use Exception;
 
 class newProductController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of products.
      */
-    public function index()
+    public function index(): View
     {
-        $products = newProduct::all();
+        $products = newProduct::orderBy('productName', 'asc')->get();
+        
         return view('pages.Setup.product', compact('products'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new product.
      */
-    public function create()
+    public function create(): View
     {
-
         $colours = Colour::orderBy('id', 'asc')->get();
         $catagorys = Catagory::orderBy('id', 'asc')->get();
         $proCompanys = productCompany::orderBy('id', 'asc')->get();
         $packings = packing::orderBy('id', 'asc')->get();
-        return view('pages.Setup.newProduct', compact('colours','catagorys', 'proCompanys', 'packings'));
-    
+        
+        return view('pages.Setup.newProduct', compact('colours', 'catagorys', 'proCompanys', 'packings'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created product in storage.
      */
-    public function store(Request $request)
+    public function store(StoreProductRequest $request): RedirectResponse
     {
-        $request->validate([
-            'productCode'     => 'required|string|max:50|unique:product_info,productCode',
-            'productName'     => 'required|string|max:100',
-            'companyName'     => 'required|string|max:150',
-            'colourName'      => 'required|string|max:100',
-            'pakingName'      => 'required|string|max:255',
-            'saleRate'        => 'required|numeric|min:0|',
-            'costRate'        => 'required|numeric|min:0|',
-            'lessQty'         => 'required|numeric|min:0|',
-            'stockQty'        => 'required|numeric',
-            'catagoryName'    => 'required|string',
-        ]);
+        try {
+            newProduct::create($request->validated());
 
-        newProduct::create($request->all());
+            return redirect()
+                ->route('product.index')
+                ->with('success', 'Product created successfully!');
 
-        return redirect()->route('product.index')->with('success', 'Product added successfully.');
-
-}
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
+        } catch (Exception $e) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Failed to create product. Please try again.');
+        }
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified product.
      */
-    public function edit(string $id)
+    public function edit(int $id): View
     {
-
-    $colours = Colour::orderBy('id', 'asc')->get();
-    $catagorys = Catagory::orderBy('id', 'asc')->get();
-    $proCompanys = productCompany::orderBy('id', 'asc')->get();
-    $packings = packing::orderBy('id', 'asc')->get();
-    
-    $product = newProduct::findOrFail($id);
-    
-    return view('pages.Setup.editProduct', compact('product','colours','catagorys','proCompanys','packings'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-
+        $colours = Colour::orderBy('id', 'asc')->get();
+        $catagorys = Catagory::orderBy('id', 'asc')->get();
+        $proCompanys = productCompany::orderBy('id', 'asc')->get();
+        $packings = packing::orderBy('id', 'asc')->get();
         $product = newProduct::findOrFail($id);
-        $product->update($request->all());
-         return redirect()->route('product.index')->with('success', 'Product updated successfully.');
+        
+        return view('pages.Setup.editProduct', compact('product', 'colours', 'catagorys', 'proCompanys', 'packings'));
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Update the specified product in storage.
      */
-    public function destroy(string $id)
+    public function update(UpdateProductRequest $request, int $id): RedirectResponse
     {
-        $product = newProduct::findOrFail($id);
-        $product->delete();
+        try {
+            $product = newProduct::findOrFail($id);
+            $product->update($request->validated());
 
-        return redirect()->route('product.index')->with('success', 'Product deleted successfully.');
+            return redirect()
+                ->route('product.index')
+                ->with('success', 'Product updated successfully!');
+
+        } catch (Exception $e) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Failed to update product. Please try again.');
+        }
+    }
+
+    /**
+     * Remove the specified product from storage.
+     */
+    public function destroy(int $id): RedirectResponse
+    {
+        try {
+            $product = newProduct::findOrFail($id);
+            $productName = $product->productName;
+            $product->delete();
+
+            return redirect()
+                ->route('product.index')
+                ->with('success', "Product '{$productName}' deleted successfully!");
+
+        } catch (Exception $e) {
+            return redirect()
+                ->route('product.index')
+                ->with('error', 'Failed to delete product. Please try again.');
+        }
     }
 }

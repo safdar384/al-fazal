@@ -2,98 +2,136 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\NewCustomer;
 use App\Models\CustomerArea;
+use App\Http\Requests\StoreCustomerRequest;
+use App\Http\Requests\UpdateCustomerRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
+use Exception;
 
 class NewCustomerController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of customers.
+     *
+     * @return View
      */
-    public function index()
+    public function index(): View
     {
-        $customers = NewCustomer::all(); // Fetch all customers
+        $customers = NewCustomer::orderBy('custName', 'asc')->get();
+        
         return view('pages.Setup.Customer', compact('customers'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new customer.
+     *
+     * @return View
      */
-    public function create()
+    public function create(): View
     {
         $custAreas = CustomerArea::orderBy('id', 'asc')->get();
-        return view('pages.Setup.NewCustomer', compact('custAreas')); // Return the view for creating a new customer
+        
+        return view('pages.Setup.NewCustomer', compact('custAreas'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created customer in storage.
+     *
+     * @param StoreCustomerRequest $request
+     * @return RedirectResponse
      */
-    public function store(Request $request)
+    public function store(StoreCustomerRequest $request): RedirectResponse
     {
-        $request->validate([
-        'custCode'        => 'required|string|max:50|unique:newcustomers,custCode',
-        'custArea'        => 'required|string|max:100',
-        'bussnessName'    => 'required|string|max:150',
-        'custName'        => 'required|string|max:100',
-        'custAddress'     => 'required|string|max:255',
-        'custContect'     => 'required|string|max:50',
-        'custCity'        => 'required|string|max:100',
-        'custPage'        => 'required|string|max:100',
-        'custdiscount'    => 'required|numeric|min:0|max:100',
-        'custPayTermDay'  => 'required|integer|min:0',
-        'custCreditLimit' => 'required|numeric|min:0',
-        'custOppDate'     => 'required|date',
-        'custBalance'     => 'required|numeric',
-        'custCatagory'    => 'required|string|max:100',
-    ]);
+        try {
+            NewCustomer::create($request->validated());
 
-    NewCustomer::create($request->all());
+            return redirect()
+                ->route('Customer.index')
+                ->with('success', 'Customer created successfully!');
 
-    return redirect('/Customer')->with('success', 'Customer added successfully.');
+        } catch (Exception $e) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Failed to create customer. Please try again.');
+        }
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified customer.
+     *
+     * @param int $id
+     * @return View
      */
-    public function show(string $id)
+    public function show(int $id): View
     {
-        //
+        $customer = NewCustomer::findOrFail($id);
+        
+        return view('pages.Setup.showCustomer', compact('customer'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified customer.
+     *
+     * @param int $id
+     * @return View
      */
-    public function edit(string $id)
+    public function edit(int $id): View
     {
-         $customer = NewCustomer::findOrFail($id);
-         $custAreas = CustomerArea::orderBy('id', 'asc')->get();
+        $customer = NewCustomer::findOrFail($id);
+        $custAreas = CustomerArea::orderBy('id', 'asc')->get();
 
         return view('pages.Setup.editCustomer', compact('customer', 'custAreas'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified customer in storage.
+     *
+     * @param UpdateCustomerRequest $request
+     * @param int $id
+     * @return RedirectResponse
      */
-   public function update(Request $request, string $id)
+    public function update(UpdateCustomerRequest $request, int $id): RedirectResponse
     {
-        $customer = NewCustomer::findOrFail($id);
-        $customer->update($request->all());
+        try {
+            $customer = NewCustomer::findOrFail($id);
+            $customer->update($request->validated());
 
-    
-    return redirect()->route('Customer.index')->with('success', 'Customer updated successfully.');
+            return redirect()
+                ->route('Customer.index')
+                ->with('success', 'Customer updated successfully!');
+
+        } catch (Exception $e) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Failed to update customer. Please try again.');
+        }
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified customer from storage.
+     *
+     * @param int $id
+     * @return RedirectResponse
      */
-    public function destroy(string $id)
+    public function destroy(int $id): RedirectResponse
     {
-        $customer = NewCustomer::findOrFail($id);
-        $customer->delete();
+        try {
+            $customer = NewCustomer::findOrFail($id);
+            $customerName = $customer->custName;
+            $customer->delete();
 
-        return redirect()->route('Customer.index')->with('success', 'Customer deleted successfully.');
-        
+            return redirect()
+                ->route('Customer.index')
+                ->with('success', "Customer '{$customerName}' deleted successfully!");
+
+        } catch (Exception $e) {
+            return redirect()
+                ->route('Customer.index')
+                ->with('error', 'Failed to delete customer. Please try again.');
+        }
     }
 }
-

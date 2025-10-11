@@ -1,558 +1,610 @@
 @extends('layout.app')
 
-@section('title', 'Dashboard')
+@section('title', 'Add New Product')
 
 @section('content')
+
 <main class="app-main" id="main" tabindex="-1">
-        <!--begin::App Content Header-->
         <div class="app-content-header">
-          <!--begin::Container-->
           <div class="container-fluid">
-            <!--begin::Row-->
-            <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">New Product Information</h3></div>
+            <div class="row align-items-center">
+                <div class="col-sm-6">
+                    <h3 class="mb-0 fw-bold">
+                        <i class="bi bi-box-seam-fill text-primary me-2"></i>
+                        Add New Product
+                    </h3>
+                    <p class="text-muted small mb-0">Create a new product entry</p>
+                </div>
               <div class="col-sm-6">
-                <ol class="breadcrumb float-sm-end">
-                  <li class="breadcrumb-item"><a href="{{ url('/dashboard') }}">Home</a></li>
-                  <li class="breadcrumb-item"><a href="{{ url('/product') }}">Product</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">New Product</li>
+                    <ol class="breadcrumb float-sm-end mb-0">
+                        <li class="breadcrumb-item"><a href="{{ url('/dashboard') }}"><i class="bi bi-house-door me-1"></i>Home</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('product.index') }}">Products</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Add New</li>
                 </ol>
               </div>
             </div>
-            <!--end::Row-->
-          </div>
-          <!--end::Container-->
         </div>
-        <!--end::App Content Header-->
-        <!--begin::App Content-->
+    </div>
+
         <div class="app-content">
-          <!--begin::Container-->
           <div class="container-fluid">
-            <!--begin::Row-->
-            <div class="row">
-              <div class="col-md-12">
-                <div class="card">
-                  <form method="POST" action="{{route('product.store')}}" id="saveForm">
+            
+            <!-- Validation Errors -->
+            @if ($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0" role="alert">
+                <div class="d-flex align-items-start">
+                    <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+                    <div class="flex-grow-1">
+                        <h5 class="alert-heading mb-2">Please fix the following errors:</h5>
+                        <ul class="mb-0 ps-3">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            @endif
+
+            <form action="{{ route('product.store') }}" method="POST" id="productForm">
                     @csrf
-                    <div class="card-body">
+
                       <div class="row g-3">
-                        <div class="col-md-3">
-                          <label class="form-label">Product Code</label>
-                          <input type="text" class="form-control" name="productCode" value="{{ old('productCode') }}" autocomplete="off">
+                    <!-- Left Column - Product Info -->
+                    <div class="col-lg-6">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <h6 class="text-primary mb-3 pb-2 border-bottom">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    Product Information
+                                </h6>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">
+                                        <i class="bi bi-upc-scan text-primary me-1"></i>
+                                        Product Code
+                                        <span class="badge bg-success bg-opacity-10 text-success ms-2">
+                                            <i class="bi bi-magic"></i> Auto
+                                        </span>
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control @error('productCode') is-invalid @enderror" 
+                                           name="productCode" 
+                                           value="{{ old('productCode') }}" 
+                                           placeholder="Leave blank for auto-generation"
+                                           autocomplete="off">
                           @error('productCode')
-                            <span class="text-danger">{{ $message }}</span>
+                                        <div class="invalid-feedback">{{ $message }}</div>
                           @enderror
+                                    <small class="form-text text-success">
+                                        <i class="bi bi-stars"></i> Will auto-generate (PRD0001, PRD0002...)
+                                    </small>
                         </div>
-                        <div class="col-md-9">
-                          <label class="form-label">Product Name</label>
-                          <input type="text" class="form-control" name="productName" value="{{ old('productName') }}" autocomplete="off">
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">
+                                        <i class="bi bi-box text-primary me-1"></i>
+                                        Product Name <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control @error('productName') is-invalid @enderror" 
+                                           name="productName" 
+                                           value="{{ old('productName') }}"
+                                           placeholder="Enter product name"
+                                           autocomplete="off" 
+                                           autofocus
+                                           required>
                           @error('productName')
-                            <span class="text-danger">{{ $message }}</span>
+                                        <div class="invalid-feedback">{{ $message }}</div>
                           @enderror
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Product Company</label>
-                            <a href="#" onclick="openModal('companyModal')">Add Company</a>
-                            <select class="form-select select2 w-100" name="companyName" id="companySelect" autocomplete="off">
-                              <option selected disabled>Choose Company</option>  
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">
+                                        <i class="bi bi-building text-primary me-1"></i>
+                                        Company Name <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="d-flex gap-2">
+                                        <select class="form-select @error('companyName') is-invalid @enderror" 
+                                                name="companyName" 
+                                                id="companySelect"
+                                                required>
+                                            <option value="">-- Select Company --</option>
                               @foreach($proCompanys as $company)
-                                    <option value="{{ $company->companyName }}" 
-                                        {{ old('companyName') == $company->companyName ? 'selected' : '' }}>
+                                                <option value="{{ $company->companyName }}" {{ old('companyName') == $company->companyName ? 'selected' : '' }}>
                                         {{ $company->companyName }}
                                     </option>
                                 @endforeach
                             </select>
+                                        <button type="button" class="btn btn-outline-primary" onclick="openModal('companyModal')" title="Add Company">
+                                            <i class="bi bi-plus-circle"></i>
+                                        </button>
+                                    </div>
                             @error('companyName')
-                                <span class="text-danger">{{ $message }}</span>
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="col-md-4">
-                          <label class="form-label">Colour</label>
-                          <a href="#" onclick="openModal('coloureModal')">Add Colour</a>
-                          <select class="form-select select2 w-100" name="colourName"  id="colourSelect" style="">
-                            <option selected disabled>Choose Colour</option>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold">
+                                            <i class="bi bi-palette text-primary me-1"></i>
+                                            Colour <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="d-flex gap-2">
+                                            <select class="form-select @error('colourName') is-invalid @enderror" 
+                                                    name="colourName" 
+                                                    id="colourSelect"
+                                                    required>
+                                                <option value="">-- Select Colour --</option>
                             @foreach($colours as $colour)
-                              <option value="{{ $colour->colourName }}" 
-                                  {{ old('colourName') == $colour->colourName ? 'selected' : '' }}>
+                                                    <option value="{{ $colour->colourName }}" {{ old('colourName') == $colour->colourName ? 'selected' : '' }}>
                                   {{ $colour->colourName }}
                               </option>
                             @endforeach
                           </select>
+                                            <button type="button" class="btn btn-outline-primary" onclick="openModal('colourModal')" title="Add Colour">
+                                                <i class="bi bi-plus-circle"></i>
+                                            </button>
+                                        </div>
                            @error('colourName')
-                                <span class="text-danger">{{ $message }}</span>
+                                            <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>
-                            <div class="col-md-4">
-                            <label class="form-label">Packing</label>
-                            <a href="#" onclick="openModal('pakingModal')">Add Packing</a>
-                            <select class="form-select select2" name="pakingName" id="packingSelect">
-                                <option selected disabled>Choose Packing</option>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold">
+                                            <i class="bi bi-box-seam text-primary me-1"></i>
+                                            Packing <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="d-flex gap-2">
+                                            <select class="form-select @error('pakingName') is-invalid @enderror" 
+                                                    name="pakingName" 
+                                                    id="packingSelect"
+                                                    required>
+                                                <option value="">-- Select Packing --</option>
                                 @foreach($packings as $packing)
-                                    <option value="{{ $packing->pakingName }}" 
-                                        {{ old('pakingName') == $packing->pakingName ? 'selected' : '' }}>
+                                                    <option value="{{ $packing->pakingName }}" {{ old('pakingName') == $packing->pakingName ? 'selected' : '' }}>
                                         {{ $packing->pakingName }}
                                     </option>
                                 @endforeach
                             </select>
+                                            <button type="button" class="btn btn-outline-primary" onclick="openModal('packingModal')" title="Add Packing">
+                                                <i class="bi bi-plus-circle"></i>
+                                            </button>
+                                        </div>
                             @error('pakingName')
-                                <span class="text-danger">{{ $message }}</span>
+                                            <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>
-
-                        <div class="col-md-4">
-                          <label class="form-label">Sale Rate</label>
-                          <input type="number" step="0.01" class="form-control" name="saleRate" value="{{ old('saleRate')}}" autocomplete="off">
-                          @error('saleRate')
-                            <span class="text-danger">{{ $message }}</span>
-                          @enderror
                         </div>
                         
-                        <div class="col-md-4">
-                          <label class="form-label">Cost Rate</label>
-                          <input type="number" step="0.01" class="form-control" name="costRate" value="{{ old('costRate') }}" autocomplete="off">
-                          @error('costRate')
-                            <span class="text-danger">{{ $message }}</span>
-                          @enderror
-                        </div>
-
-                        <div class="col-md-4">
-                          <label class="form-label">Less Quantity</label>
-                          <input type="number" step="0.01" class="form-control" name="lessQty" value="{{ old('lessQty') }}" autocomplete="off">
-                          @error('lessQty')
-                            <span class="text-danger">{{ $message }}</span>
-                          @enderror
-                        </div>
-                        
-                        <div class="col-md-4">
-                          <label class="form-label">Stock Quantity</label>
-                          <input type="number" step="0.01" class="form-control" name="stockQty" value="{{ old('stockQty') }}" autocomplete="off">
-                          @error('stockQty')
-                            <span class="text-danger">{{ $message }}</span>
-                          @enderror
-                        </div>
-                        
-                        <div class="col-md-4">
-                          <label class="form-label">Category</label>
-                          <a href="#" onclick="openModal('catagoryModal')">Add Catagory</a>
-                          <select class="form-select select2" name="catagoryName" id="CategorySelect">
-                            <option selected disabled>Choose Catagory</option>
-                            @foreach($catagorys as $catagory)
-                                <option value="{{ $catagory->catagoryName }}" 
-                                    {{ old('catagoryName') == $catagory->catagoryName ? 'selected' : '' }}>
-                                    {{ $catagory->catagoryName }}
+                                <div class="mb-0">
+                                    <label class="form-label fw-semibold">
+                                        <i class="bi bi-tag text-primary me-1"></i>
+                                        Category <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="d-flex gap-2">
+                                        <select class="form-select @error('catagoryName') is-invalid @enderror" 
+                                                name="catagoryName" 
+                                                id="categorySelect"
+                                                required>
+                                            <option value="">-- Select Category --</option>
+                                            @foreach($catagorys as $category)
+                                                <option value="{{ $category->catagoryName }}" {{ old('catagoryName') == $category->catagoryName ? 'selected' : '' }}>
+                                                    {{ $category->catagoryName }}
                                 </option>
                             @endforeach
                           </select>
+                                        <button type="button" class="btn btn-outline-primary" onclick="openModal('categoryModal')" title="Add Category">
+                                            <i class="bi bi-plus-circle"></i>
+                                        </button>
+                                    </div>
                           @error('catagoryName')
-                              <span class="text-danger">{{ $message }}</span>
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>
                       </div>
                     </div>
-                    <div class="card-footer text-end">
-                      <a href="{{ route('product.index') }}" class="btn btn-secondary">Cancel</a>
-                      <button type="button" class="btn btn-success" onclick="showConfirm('saveForm')">Save Product</button>
                     </div>
-                  </form>     
+
+                    <!-- Right Column - Pricing & Stock -->
+                    <div class="col-lg-6">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <h6 class="text-success mb-3 pb-2 border-bottom">
+                                    <i class="bi bi-cash-stack me-2"></i>
+                                    Pricing & Stock Information
+                                </h6>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold">
+                                            <i class="bi bi-currency-dollar text-success me-1"></i>
+                                            Sale Rate <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-success bg-opacity-10 text-success fw-bold">Rs.</span>
+                                            <input type="number" 
+                                                   step="0.01" 
+                                                   class="form-control @error('saleRate') is-invalid @enderror" 
+                                                   name="saleRate" 
+                                                   value="{{ old('saleRate', 0) }}"
+                                                   placeholder="0.00"
+                                                   autocomplete="off" 
+                                                   required>
+                                            @error('saleRate')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                 </div>
-                  <!-- /.card -->
-                <!-- /.card -->
-              </div>
-              <!-- /.col -->
-            </div>
-            <!--end::Row-->
-          </div>
-          <!--end::Container-->
-        </div>
-        <!--end::App Content-->
-      </main>
-      <!-- Modal -->
-      <!-- Coloure Modal (won’t close the other modal) -->
-      <div class="modal fade" id="coloureModal" tabindex="-1" aria-labelledby="coloureModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-             {{-- Success message (will be shown by JS) --}}
-             <div id="colourSuccess" class="alert alert-success d-none"></div>
-            <form id="colourForm" method="POST" action="{{route('coloure.store')}}">
-              @csrf
-              <div class="modal-header bg-success text-white">
-                <h5 class="modal-title" id="colourModalLabel">Add New Colour</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
               </div>
 
-              <div class="modal-body">
-                <div class="mb-3">
-                  <label>Colour Name</label>
-                  <input type="text" name="colourName" id="colourName" class="form-control @error('colourName') is-invalid @enderror" autocomplete="off">
-                  @error('colourName')
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold">
+                                            <i class="bi bi-cart text-warning me-1"></i>
+                                            Cost Rate <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-warning bg-opacity-10 text-warning fw-bold">Rs.</span>
+                                            <input type="number" 
+                                                   step="0.01" 
+                                                   class="form-control @error('costRate') is-invalid @enderror" 
+                                                   name="costRate" 
+                                                   value="{{ old('costRate', 0) }}"
+                                                   placeholder="0.00"
+                                                   autocomplete="off" 
+                                                   required>
+                                            @error('costRate')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+          </div>
+        </div>
+              </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold">
+                                            <i class="bi bi-boxes text-info me-1"></i>
+                                            Stock Quantity <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light">
+                                                <i class="bi bi-stack text-info"></i>
+                                            </span>
+                                            <input type="number" 
+                                                   class="form-control @error('stockQty') is-invalid @enderror" 
+                                                   name="stockQty" 
+                                                   value="{{ old('stockQty', 0) }}"
+                                                   placeholder="0"
+                                                   autocomplete="off" 
+                                                   required>
+                                            @error('stockQty')
                       <div class="invalid-feedback">{{ $message }}</div>
                   @enderror
                 </div>
               </div>
-              <div class="modal-footer">
-                <div class="col-md-4">
-                    <input type="text" id="searchColour" class="form-control form-control-sm" placeholder="Search by Colour">
+
+                <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold">
+                                            <i class="bi bi-exclamation-triangle text-danger me-1"></i>
+                                            Minimum Quantity <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-danger bg-opacity-10 text-danger">
+                                                <i class="bi bi-alarm"></i>
+                                            </span>
+                                            <input type="number" 
+                                                   class="form-control @error('lessQty') is-invalid @enderror" 
+                                                   name="lessQty" 
+                                                   value="{{ old('lessQty', 10) }}"
+                                                   placeholder="10"
+                                                   autocomplete="off" 
+                                                   required>
+                                            @error('lessQty')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <small class="form-text text-muted">
+                                            <i class="bi bi-info-circle"></i>
+                                            Alert when stock falls below this
+                                        </small>
                 </div>
-                <button  type="submit" class="btn btn-success">Save</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
               </div>
-            </form>
-              <div class="card">
-                <div class="card-body p-2">
-                    <!-- Scrollable container -->
-                    <div style="max-height: 250px; min-height: 100px; overflow-y: auto;">
-                        <table class="table table-bordered table-sm mb-0" id="colourTable">
-                            <thead class="table-light sticky-top">
-                                <tr>
-                                    <th style="width: 5%;">No.</th>
-                                    <th style="width: 70%;">Colour</th>
-                                    <th style="width: 25%;">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                              @forelse($colours as $colour)
-                                <tr>
-                                    <td>{{ $colour->id }}</td>
-                                    <td>{{ $colour->colourName }}</td>
-                                  <td>
-                                    <form action="{{ route('coloure.destroy', $colour->id) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger"
-                                            onclick="return confirm('Are you sure you want to delete this colour?')">
-                                            Delete
-                                        </button>
-                                    </form>
-                                  </td>
-                                </tr>
-                              @endforeach
-                            </tbody>
-                        </table>
+
+                                <!-- Profit Margin Display -->
+                                <div class="alert alert-info border-0 shadow-sm mb-0">
+                                    <div class="d-flex align-items-start">
+                                        <i class="bi bi-graph-up-arrow fs-4 me-3"></i>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">Profit Margin Calculator</h6>
+                                            <p class="mb-1" id="profitMargin">Fill in Sale Rate and Cost Rate to see profit margin</p>
+                                            <small class="text-muted">Healthy margin: 20-30%</small>
                     </div>
                 </div>
             </div>
           </div>
         </div>
       </div>
-      <!-- Paking Modal (won’t close the other modal) -->
-      <div class="modal fade" id="pakingModal" tabindex="-1" aria-labelledby="pakingModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-            <form id="pakingForm" method="POST" action="{{route('packing.store')}}">
-               @csrf
-              <div class="modal-header bg-success text-white">
-                <h5 class="modal-title" id="areaModalLabel">Add New Paking</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
               </div>
 
-              <div class="modal-body">
-                <div class="mb-3">
-                  <label>Paking Name</label>
-                  <input type="text" name="pakingName" id="pakingName" class="form-control" autocomplete="off">
+                <!-- Action Buttons -->
+                <div class="card border-0 shadow-sm mt-3">
+                    <div class="card-footer bg-light border-0 py-3">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <small class="text-muted">
+                                    <i class="bi bi-asterisk text-danger me-1"></i>
+                                    Fields marked with <span class="text-danger fw-bold">*</span> are required
+                                </small>
+                            </div>
+                            <div class="col-md-6 text-md-end mt-2 mt-md-0">
+                                <a href="{{ route('product.index') }}" class="btn btn-light me-2">
+                                    <i class="bi bi-arrow-left me-1"></i>
+                                    Back to List
+                                </a>
+                                <button type="reset" class="btn btn-outline-secondary me-2">
+                                    <i class="bi bi-arrow-clockwise me-1"></i>
+                                    Reset
+                                </button>
+                                <button type="submit" class="btn btn-primary px-4">
+                                    <i class="bi bi-save me-1"></i>
+                                    Save Product
+                                </button>
+                            </div>
                 </div>
               </div>
-              <div class="modal-footer">
-                <div class="col-md-4">
-                    <input type="text" id="searchPacking" class="form-control form-control-sm" placeholder="Search by Packing">
-                </div>
-                <button type="submit" class="btn btn-success">Save</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
               </div>
             </form>
-              <div class="card">
-                <div class="card-body p-2">
-                    <!-- Scrollable container -->
-                    <div style="max-height: 250px; min-height: 100px; overflow-y: auto;">
-                        <table class="table table-bordered table-sm mb-0" id="pakingTable">
-                            <thead class="table-light sticky-top">
-                                <tr>
-                                    <th style="width: 5%;">No.</th>
-                                    <th style="width: 70%;">Packing</th>
-                                    <th style="width: 25%;">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($packings as $packing)
-                              <tr>
-                                  <td>{{ $packing->id }}</td>
-                                  <td>{{ $packing->pakingName }}</td>
-                                  <td>
-                                      <form action="{{ route('packing.destroy', $packing->id) }}" method="POST" style="display:inline;">
+        </div>
+    </div>
+</main>
+
+<style>
+.card {
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1) !important;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.15);
+}
+
+.card-body {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-uppercase product code
+    const productCodeInput = document.querySelector('input[name="productCode"]');
+    if (productCodeInput) {
+        productCodeInput.addEventListener('input', function() {
+            if (this.value.trim() !== '') {
+                this.value = this.value.toUpperCase().replace(/[^A-Z0-9\-]/g, '');
+            }
+        });
+    }
+
+    // Calculate profit margin
+    const saleRateInput = document.querySelector('input[name="saleRate"]');
+    const costRateInput = document.querySelector('input[name="costRate"]');
+    const profitDisplay = document.getElementById('profitMargin');
+
+    function calculateMargin() {
+        const saleRate = parseFloat(saleRateInput.value) || 0;
+        const costRate = parseFloat(costRateInput.value) || 0;
+
+        if (saleRate > 0 && costRate > 0) {
+            const profit = saleRate - costRate;
+            const margin = ((profit / saleRate) * 100).toFixed(2);
+            const profitAmount = profit.toFixed(2);
+
+            let color = 'success';
+            let icon = 'check-circle';
+            if (margin < 15) {
+                color = 'danger';
+                icon = 'exclamation-triangle';
+            } else if (margin < 25) {
+                color = 'warning';
+                icon = 'info-circle';
+            }
+
+            profitDisplay.innerHTML = `
+                <i class="bi bi-${icon} me-1"></i>
+                <strong class="text-${color}">Profit: Rs. ${profitAmount} (${margin}%)</strong>
+            `;
+        }
+    }
+
+    saleRateInput.addEventListener('input', calculateMargin);
+    costRateInput.addEventListener('input', calculateMargin);
+
+    // Auto-dismiss alerts
+    setTimeout(() => {
+        const alerts = document.querySelectorAll('.alert-success, .alert-danger');
+        alerts.forEach(alert => {
+            if (bootstrap.Alert) {
+                new bootstrap.Alert(alert).close();
+            }
+        });
+    }, 5000);
+});
+
+// Modal Functions
+function openModal(modalId) {
+    $('#' + modalId).modal('show');
+}
+
+// Auto-reopen modals if there are validation errors
+$(document).ready(function() {
+    @if($errors->has('companyName'))
+        $('#companyModal').modal('show');
+    @elseif($errors->has('colourName'))
+        $('#colourModal').modal('show');
+    @elseif($errors->has('pakingName'))
+        $('#packingModal').modal('show');
+    @elseif($errors->has('catagoryName'))
+        $('#categoryModal').modal('show');
+    @endif
+});
+</script>
+
+<!-- Company Modal -->
+<div class="modal fade" id="companyModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-building-fill me-2"></i>
+                    Add New Company
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="companyForm">
                                           @csrf
-                                          @method('DELETE')
-                                          <button type="submit" class="btn btn-sm btn-danger"
-                                              onclick="return confirm('Are you sure you want to delete this catagory?')">
-                                              Delete
-                                          </button>
-                                      </form>
-                                  </td>
-                              </tr>
-                              @endforeach
-                            </tbody>
-                        </table>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Company Name <span class="text-danger">*</span></label>
+                        <input type="text" name="companyName" class="form-control" placeholder="Enter company name" autocomplete="off" required>
+                        <span class="text-danger error-companyName"></span>
                     </div>
                 </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i> Save
+                    </button>
             </div>
-          </div>
+            </form>
         </div>
       </div>
-      <!-- Modal -->
-      <!-- Catagory Modal (won’t close the other modal) -->
-      <div class="modal fade" id="catagoryModal" tabindex="-1" aria-labelledby="catagoryModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-            <form id="catagoryForm" method="POST" action="{{route('catagory.store')}}">
-              @csrf
-              <div class="modal-header bg-success text-white">
-                <h5 class="modal-title" id="catagoryModalLabel">Add New Catagory</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
               </div>
 
+<!-- Colour Modal -->
+<div class="modal fade" id="colourModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-palette-fill me-2"></i>
+                    Add New Colour
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ route('coloure.store') }}" method="POST">
+                @csrf
               <div class="modal-body">
                 <div class="mb-3">
-                  <label>Catagory Name</label>
-                  <input type="text" name="catagoryName" id="catagoryName" class="form-control" autocomplete="off">
-                </div>
+                        <label class="form-label fw-semibold">Colour Name <span class="text-danger">*</span></label>
+                        <input type="text" name="colourName" class="form-control @error('colourName') is-invalid @enderror" placeholder="e.g., Black, White, Red" value="{{ old('colourName') }}" autocomplete="off" required>
+                        @error('colourName')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
               </div>
-              <div class="modal-footer">
-                <div class="col-md-4">
-                    <input type="text" id="searchCatagory" class="form-control form-control-sm" placeholder="Search by Catagory">
                 </div>
-                <button type="submit" class="btn btn-success">Save</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i> Save
+                    </button>
               </div>
             </form>
-            <div class="card">
-              <div class="card-body p-2">
-                  <!-- Scrollable container -->
-                  <div style="max-height: 250px; min-height: 100px; overflow-y: auto;">
-                      <table class="table table-bordered table-sm mb-0" id="catagoryTable">
-                          <thead class="table-light sticky-top">
-                              <tr>
-                                  <th style="width: 5%;">No.</th>
-                                  <th style="width: 70%;">Colour</th>
-                                  <th style="width: 25%;">Action</th>
-                              </tr>
-                          </thead>
-                          <tbody>
-                           @foreach($catagorys as $catagor)
-                            <tr>
-                                <td>{{ $catagor->id }}</td>
-                                <td>{{ $catagor->catagoryName }}</td>
-                                <td>
-                                    <form action="{{ route('catagory.destroy', $catagor->id) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger"
-                                            onclick="return confirm('Are you sure you want to delete this catagory?')">
-                                            Delete
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                            @endforeach
-                          </tbody>
-                      </table>
                   </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-      <!-- Modal -->
-      <!-- company Modal (won’t close the other modal) -->
-      <!-- Company Modal -->
-<div class="modal fade" id="companyModal" tabindex="-1" aria-labelledby="companyModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <form id="companyForm" method="POST" class="modal-form" action="{{route('company.store')}}">
-                @csrf
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title">Add New Company</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
 
+<!-- Packing Modal -->
+<div class="modal fade" id="packingModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-box-seam-fill me-2"></i>
+                    Add New Packing
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ route('packing.store') }}" method="POST">
+                @csrf
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label>Company Name</label>
-                        <input type="text" name="companyName" id='companyName' class="form-control" autocomplete="off">
+                        <label class="form-label fw-semibold">Packing Name <span class="text-danger">*</span></label>
+                        <input type="text" name="pakingName" class="form-control @error('pakingName') is-invalid @enderror" placeholder="e.g., Box, Carton, Pack" value="{{ old('pakingName') }}" autocomplete="off" required>
+                        @error('pakingName')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <div class="col-md-4">
-                        <input type="text" id="searchCompany" class="form-control form-control-sm" placeholder="Search by Company">
-                    </div>
-                    <button type="submit" class="btn btn-success">Save</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i> Save
+                    </button>
                 </div>
             </form>
-            <div class="card">
-                <div class="card-body p-2">
-                    <div style="max-height: 250px; min-height: 100px; overflow-y: auto;">
-                        <table class="table table-bordered table-sm mb-0" id="companyTable">
-                            <thead class="table-light sticky-top">
-                                <tr>
-                                    <th style="width: 5%;">No.</th>
-                                    <th style="width: 70%;">Company</th>
-                                    <th style="width: 25%;">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                              @foreach($proCompanys as $company)
-                              <tr>
-                                  <td>{{ $company->id }}</td>
-                                  <td>{{ $company->companyName }}</td>
-                                  <td>
-                                      <form action="{{ route('company.destroy', $company->id) }}" method="POST" style="display:inline;">
-                                          @csrf
-                                          @method('DELETE')
-                                          <button type="submit" class="btn btn-sm btn-danger"
-                                             onclick="confirmDelete('deleteForm{{ $company->id }}', 'Delete Customer', 'Do you really want to delete {{ $company->name }}?')">
-                                              Delete
-                                          </button>
-                                      </form>
-                                  </td>
-                              </tr>
-                              @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </div>
-    <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const searchConfigs = [
-      { input: "searchColour", table: "colourTable" },
-      { input: "searchPacking", table: "pakingTable" },
-      { input: "searchCatagory", table: "catagoryTable" },
-      { input: "searchCompany", table: "companyTable" },
-      { input: "searchName", table: "productTable", col: 1 },
-      { input: "searchArea", table: "productTable", col: 2 }
-    ];
 
-    searchConfigs.forEach(({ input, table, col }) => {
-      const inputEl = document.getElementById(input);
-      const tbody = document.getElementById(table)?.querySelector("tbody");
-      if (!inputEl || !tbody) return;
+<!-- Category Modal -->
+<div class="modal fade" id="categoryModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-tag-fill me-2"></i>
+                    Add New Category
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ route('catagory.store') }}" method="POST">
+                                          @csrf
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Category Name <span class="text-danger">*</span></label>
+                        <input type="text" name="catagoryName" class="form-control @error('catagoryName') is-invalid @enderror" placeholder="e.g., Electronics, Appliances" value="{{ old('catagoryName') }}" autocomplete="off" required>
+                        @error('catagoryName')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i> Save
+                    </button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-      inputEl.addEventListener("input", () => {
-        const val = inputEl.value.toLowerCase();
-        Array.from(tbody.rows).forEach(row => {
-          const text = row.cells[col ?? 1].textContent.toLowerCase();
-          row.style.display = text.includes(val) ? "" : "none";
-        });
-      });
-    });
-
-   
-
-    // Re-initialize Select2 on modal show
-    $('#productModal').on('shown.bs.modal', function () {
-      ['#CategorySelect', '#pakingSelect', '#colourSelect', '#companySelect'].forEach(id => {
-        $(id).select2({
-          dropdownParent: $('#productModal'),
-          placeholder: "Choose Option",
-          allowClear: true
-        });
-      });
-    });
-  });
-
-  // General modal openers
-  window.openModal = function (id) {
-      new bootstrap.Modal(document.getElementById(id), {
-          backdrop: 'static',
-          keyboard: false
-      }).show();
-      // Load data when modal opens
-      loadTableData(id.replace('Modal', ''));
-  };
-
-  
-function handleModalForm(formId, selectId, modalId, keyName, valueField) {
-    $('#' + formId).submit(function(e) {
-        e.preventDefault();
-        $.ajax({
-            url: $(this).attr('action'),
-            type: "POST",
-            data: $(this).serialize(),
-            success: function(res) {
-                if(res.success) {
-                    // Use the returned object keyName and valueField
-                    let item = res[keyName];
-                    let value = item[valueField]; // e.g., item.companyName
-                    $('#' + selectId).append(
-                        new Option(value, value, true, true)
-                    ).trigger('change');
-                    
-                    $('#' + modalId).modal('hide');
-                    $('#' + formId)[0].reset();
-                }
-            },
-            error: function(xhr){
-                console.log(xhr.responseJSON);
-            }
-        });
-    });
-}
-
-// Initialize for all modals with proper field names
-handleModalForm('companyForm', 'companySelect', 'companyModal', 'company', 'companyName');
-handleModalForm('colourForm', 'colourSelect', 'coloureModal', 'colour', 'colourName');
-handleModalForm('pakingForm', 'packingSelect', 'pakingModal', 'packing', 'pakingName');
-handleModalForm('catagoryForm', 'CategorySelect', 'catagoryModal', 'catagory', 'catagoryName');
-   
-function modalForm(formId, selectId){
-    $('#' + formId).submit(function(e){
-        e.preventDefault();
-        let f = $(this);
-
-        $.post(f.attr('action'), f.serialize())
-         .done(res => {
-            if(res.success && res[selectId]){
-                let data = res[selectId];
-                let newId   = data.id;
-                let newName = data.colourName; // <- use real field name
-
-                // Prevent duplicate
-                if($("#" + selectId + " option[value='"+ newId +"']").length === 0){
-                    $('#' + selectId).append(
-                        new Option(newName, newId, true, true)
-                    ).val(newId).trigger('change'); // also select it
-                }
-
-                f[0].reset();
-                f.find('.is-invalid').removeClass('is-invalid');
-                f.find('.invalid-feedback').remove();
-                $('#' + formId.replace('Form','Modal')).modal('hide');
-            }
-        })
-
-         .fail(xhr => {
-            let errors = xhr.responseJSON.errors;
-            f.find('.is-invalid').removeClass('is-invalid'); 
-            f.find('.invalid-feedback').remove();
-
-            $.each(errors, (k,v) => {
-                f.find('[name="'+k+'"]').addClass('is-invalid')
-                 .after('<div class="invalid-feedback">'+v[0]+'</div>');
-            });
-        });
-    });
-}
-
-
-// Initialize all forms
-modalForm('companyForm','companyName');
-modalForm('colourForm','colourName');
-modalForm('pakingForm','pakingName');
-modalForm('catagoryForm','catagoryName');
-
-
-</script>
-
-
-      @endsection
+@endsection

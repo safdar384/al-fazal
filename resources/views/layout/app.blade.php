@@ -6,11 +6,7 @@
     @yield('content')
 </div>
 
-{{-- Global Confirm Modal (only one instance in layout) --}}
-@include('components.confirm-modal')
-
 {{-- Global JS --}}
-<script src="{{ asset('js/global.js') }}"></script>
-@stack('scripts')
+<script src="{{ asset('JS/global.js') }}"></script>
 
 @include('layout.footer')

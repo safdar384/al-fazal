@@ -63,7 +63,7 @@
                     </div>
                      <div class="card">
                       <div class="card-body table-wrapper">
-                        <table class="table table-bordered table-hover" id="ajentTable">
+                        <table class="table table-bordered table-hover" id="agentTable">
                           <thead class="table-primary">
                           <tr>
                               <th>ID</th>
@@ -89,7 +89,7 @@
                               <td>20000</td>
                               <td>14400</td>
                               <td>
-                              <button class="btn btn-sm btn-warning" onclick="window.location.href='{{ url('/EditAjentAccountTransection') }}'">Edit</button>
+                              <button class="btn btn-sm btn-warning" onclick="window.location.href='{{ url('/EditAgentAccountTransection') }}'">Edit</button>
                               <button class="btn btn-sm btn-danger">Delete</button>
                               </td>
                           </tr>
