@@ -2,37 +2,89 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Colour;
+use App\Http\Requests\StoreColourRequest;
+use App\Http\Requests\UpdateColourRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class ColourController extends Controller
 {
-
-     public function index()
+    /**
+     * Display a listing of colours
+     */
+    public function index(): View
     {
-        $colours = Colour::all();
-        return view('pages.Setup.product', compact('colours'));
+        $colours = Colour::orderBy('colourName', 'asc')->get();
+        return view('Pages.Setup.colour', compact('colours'));
     }
 
-    public function store(Request $request)
+    /**
+     * Show the form for creating a new colour
+     */
+    public function create(): View
     {
-        $validated = $request->validate([
-            'colourName' => 'required|unique:colour|max:255' // or "colours" if plural
-        ]);
-
-        $colour = Colour::create($validated);
-
-        return response()->json(['success' => true, 'colour' => $colour]); // Colour
-
-
+        return view('Pages.Setup.newColour');
     }
 
-    public function destroy($id)
+    /**
+     * Store a newly created colour
+     */
+    public function store(StoreColourRequest $request): RedirectResponse
     {
-        Colour::findOrFail($id)->delete();
-        return redirect()->back()->with('success', 'Colour deleted successfully.');
+        try {
+            Colour::create($request->validated());
+            
+            return redirect()->route('colours.index')
+                ->with('success', 'Colour added successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Failed to add colour. Please try again.');
+        }
     }
-     
-    
+
+    /**
+     * Show the form for editing the specified colour
+     */
+    public function edit(string $id): View
+    {
+        $colour = Colour::findOrFail($id);
+        return view('Pages.Setup.editColour', compact('colour'));
+    }
+
+    /**
+     * Update the specified colour
+     */
+    public function update(UpdateColourRequest $request, string $id): RedirectResponse
+    {
+        try {
+            $colour = Colour::findOrFail($id);
+            $colour->update($request->validated());
+            
+            return redirect()->route('colours.index')
+                ->with('success', 'Colour updated successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Failed to update colour. Please try again.');
+        }
+    }
+
+    /**
+     * Remove the specified colour
+     */
+    public function destroy(string $id): RedirectResponse
+    {
+        try {
+            $colour = Colour::findOrFail($id);
+            $colour->delete();
+            
+            return redirect()->route('colours.index')
+                ->with('success', 'Colour deleted successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Failed to delete colour. Please try again.');
+        }
+    }
 }
-

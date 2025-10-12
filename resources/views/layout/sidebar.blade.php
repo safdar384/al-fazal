@@ -26,8 +26,8 @@
                 <li class="nav-header">MANAGEMENT</li>
 
                 <!-- Setup -->
-                <li class="nav-item {{ request()->is('product*', 'Customer*', 'NewAgent*', 'areas*', 'bankAccount*') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->is('product*', 'Customer*', 'NewAgent*', 'areas*', 'bankAccount*') ? 'active' : '' }}">
+                <li class="nav-item {{ request()->is('product*', 'Customer*', 'NewAgent*', 'areas*', 'bankAccount*', 'colours*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('product*', 'Customer*', 'NewAgent*', 'areas*', 'bankAccount*', 'colours*') ? 'active' : '' }}">
                         <i class="nav-icon bi bi-gear-fill"></i>
                         <p>
                             Setup
@@ -57,6 +57,12 @@
                             <a href="{{ route('NewAgent.index') }}" class="nav-link {{ request()->is('NewAgent*') ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-person-badge"></i>
                                 <p>Agents</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('colours.index') }}" class="nav-link {{ request()->is('colours*') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-palette"></i>
+                                <p>Colours</p>
                             </a>
                         </li>
                         <li class="nav-item">

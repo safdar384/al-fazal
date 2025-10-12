@@ -60,7 +60,6 @@
                                         </div>
                                         <div class="flex-grow-1 ms-3">
                                             <h6 class="text-muted mb-1 small">Total Products</h6>
-                                            <h3 class="mb-0 fw-bold">{{ count($products) }}</h3>
                                         </div>
                                     </div>
                                 </div>

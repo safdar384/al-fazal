@@ -61,25 +61,25 @@ Route::get('/product/{id}/edit', [newProductController::class, 'edit'])->name('p
 Route::put('/product/{id}', [newProductController::class, 'update'])->name('product.update');
 Route::delete('/product/{id}', [newProductController::class, 'destroy'])->name('product.destroy');
 
-// Company routes
+// Company routes (used in product create modal)
 Route::post('/company/create', [CompanyController::class, 'store'])->name('company.store');
-Route::get('/company/list', [CompanyController::class, 'index'])->name('company.index');
 Route::delete('/company/{id}', [CompanyController::class, 'destroy'])->name('company.destroy');
 
-// Category routes
+// Category routes (used in product create modal)
 Route::post('/catagory/create', [CatagoryController::class, 'store'])->name('catagory.store');
-Route::get('/catagory/list', [CatagoryController::class, 'index'])->name('catagory.index');
 Route::delete('/catagory/{id}', [CatagoryController::class, 'destroy'])->name('catagory.destroy');
 
-// Packing routes
+// Packing routes (used in product create modal)
 Route::post('/packing/create', [PackingController::class, 'store'])->name('packing.store');
-Route::get('/packing/list', [PackingController::class, 'index'])->name('packing.index');
-Route::delete('/packing/delete/{id}', [PackingController::class, 'destroy'])->name('packing.destroy');
+Route::delete('/packing/{id}', [PackingController::class, 'destroy'])->name('packing.destroy');
 
 // Colour routes
-Route::post('/coloure/create', [ColourController::class, 'store'])->name('coloure.store');
-Route::get('/coloure/list', [ColourController::class, 'index'])->name('coloure.index');
-Route::delete('/coloure/{id}', [ColourController::class, 'destroy'])->name('coloure.destroy');
+Route::get('/colours', [ColourController::class, 'index'])->name('colours.index');
+Route::get('/colours/create', [ColourController::class, 'create'])->name('colours.create');
+Route::post('/colours', [ColourController::class, 'store'])->name('colours.store');
+Route::get('/colours/{id}/edit', [ColourController::class, 'edit'])->name('colours.edit');
+Route::put('/colours/{id}', [ColourController::class, 'update'])->name('colours.update');
+Route::delete('/colours/{id}', [ColourController::class, 'destroy'])->name('colours.destroy');
 
 // New Agent Resource Routes
 Route::get('/NewAgent', [NewAgentController::class, 'index'])->name('NewAgent.index');

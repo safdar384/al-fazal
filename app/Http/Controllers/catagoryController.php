@@ -2,36 +2,39 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Catagory;
-
+use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 
 class CatagoryController extends Controller
 {
-    
-    public function index()
-    {
-        $cataGory = Catagory::all();
-        return view('pages.Setup.product', compact('cataGory'));
-    }
-
-    public function store(Request $request)
+    /**
+     * Store a newly created category
+     */
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'catagoryName' => 'required|unique:product_catagory|max:255' // or "catagory" if plural
+            'catagoryName' => 'required|unique:product_catagory|max:255'
         ]);
 
-        $catagory = Catagory::create($validated);
+        Catagory::create($validated);
 
-        return response()->json(['success' => true, 'catagory' => $catagory]); // Category
-        
-
-
+        return redirect()->route('product.create')->with('success', 'Category added successfully!');
     }
 
-    public function destroy($id)
+    /**
+     * Remove the specified category
+     */
+    public function destroy(string $id): RedirectResponse
     {
-        Catagory::findOrFail($id)->delete();
-        return redirect()->back()->with('success', 'Catagory deleted successfully.');
+        try {
+            $category = Catagory::findOrFail($id);
+            $category->delete();
+            
+            return redirect()->back()->with('success', 'Category deleted successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to delete category.');
+        }
     }
 }
+

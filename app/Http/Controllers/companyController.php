@@ -4,30 +4,37 @@ namespace App\Http\Controllers;
 
 use App\Models\productCompany;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 
 class CompanyController extends Controller
 {
-    
-    public function index()
-    {
-        $comapany = productCompany::all();
-        return view('pages.Setup.product', compact('comapany'));
-    }
-
-    public function store(Request $request)
+    /**
+     * Store a newly created company
+     */
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'companyName' => 'required|unique:product_company|max:255'
         ]);
 
-        ProductCompany::create($validated);
+        productCompany::create($validated);
 
         return redirect()->route('product.create')->with('success', 'Company added successfully!');
     }
 
-    public function destroy($id)
+    /**
+     * Remove the specified company
+     */
+    public function destroy(string $id): RedirectResponse
     {
-        productCompany::findOrFail($id)->delete();
-        return redirect()->back()->with('success', 'Catagory deleted successfully.');
+        try {
+            $company = productCompany::findOrFail($id);
+            $company->delete();
+            
+            return redirect()->back()->with('success', 'Company deleted successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to delete company.');
+        }
     }
 }
+
