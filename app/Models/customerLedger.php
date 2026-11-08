@@ -4,8 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class customerLedger extends Model
+class CustomerLedger extends Model
 {
+    protected $table = 'customerledgers'; // 👈 add this line
+
     protected $fillable = [
         'customerDate',
         'invoiceNumber',
@@ -15,12 +17,18 @@ class customerLedger extends Model
         'credit',
         'debit',
         'category',
-        
+        'accountType',
+        'statuse',
+    ];
+
+    protected $attributes = [
+        'statuse' => '0',
     ];
 
     protected $casts = [
         'voucher_date' => 'date',
     ];
+
     public $timestamps = false;
 
     protected static function boot()
@@ -28,10 +36,10 @@ class customerLedger extends Model
         parent::boot();
 
         static::saving(function ($model) {
-            // Proper case for description
             if (!empty($model->description)) {
                 $model->description = ucwords(strtolower($model->description));
             }
         });
     }
 }
+

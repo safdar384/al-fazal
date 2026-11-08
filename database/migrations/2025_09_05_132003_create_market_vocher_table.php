@@ -22,7 +22,9 @@ return new class extends Migration
             $table->decimal('misc', 15, 2)->default(0);
             $table->decimal('preBalance', 15, 2)->default(0);
             $table->decimal('lastBalance', 15, 2)->default(0);
-            $table->foreignId('market_vouchers_id')->constrained('ledgers')->onDelete('cascade');
+            $table->decimal('delivered', 15, 2)->default(0);
+            $table->unsignedBigInteger('market_vouchers_id')->nullable();
+            $table->foreign('market_vouchers_id')->references('id')->on('ledgers')->onDelete('cascade');
         });
     }
 

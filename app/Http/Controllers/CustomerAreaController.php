@@ -2,69 +2,42 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CustomerArea;
 use App\Http\Requests\StoreAreaRequest;
-use App\Http\Requests\UpdateAreaRequest;
-use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\JsonResponse;
-use Illuminate\View\View;
+use App\Models\CustomerArea;
+use App\Models\NewCustomer;
 use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class CustomerAreaController extends Controller
 {
     /**
-     * Display a listing of customer areas.
-     *
-     * @return View
-     */
-    public function index(): View
-    {
-        $areas = CustomerArea::orderBy('areaName', 'asc')->get();
-        
-        return view('pages.Setup.area', compact('areas'));
-    }
-
-    /**
-     * Show the form for creating a new area.
-     *
-     * @return View
-     */
-    public function create(): View
-    {
-        return view('pages.Setup.newArea');
-    }
-
-    /**
-     * Store a newly created area in storage.
-     *
-     * @param StoreAreaRequest $request
-     * @return JsonResponse|RedirectResponse
+     * Store a newly created area (AJAX from customer form modal).
      */
     public function store(StoreAreaRequest $request): JsonResponse|RedirectResponse
     {
         try {
             $area = CustomerArea::create($request->validated());
 
-            // Handle AJAX requests
-            if ($request->expectsJson() || $request->wantsJson()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Area created successfully!',
-                    'area' => $area
+                    'area' => $area,
                 ], 201);
             }
 
             return redirect()
-                ->route('areas.index')
+                ->back()
                 ->with('success', 'Area created successfully!');
 
         } catch (Exception $e) {
-            if ($request->expectsJson() || $request->wantsJson()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Failed to create area.',
-                    'errors' => $e->getMessage()
+                    'errors' => $e->getMessage(),
                 ], 500);
             }
 
@@ -76,80 +49,69 @@ class CustomerAreaController extends Controller
     }
 
     /**
-     * Show the form for editing the specified area.
-     *
-     * @param int $id
-     * @return View
+     * Remove an area. Blocks delete when any customer still uses this area code.
      */
-    public function edit(int $id): View
-    {
-        $area = CustomerArea::findOrFail($id);
-        
-        return view('pages.Setup.editArea', compact('area'));
-    }
-
-    /**
-     * Update the specified area in storage.
-     *
-     * @param UpdateAreaRequest $request
-     * @param int $id
-     * @return RedirectResponse
-     */
-    public function update(UpdateAreaRequest $request, int $id): RedirectResponse
+    public function destroy(Request $request, int $id): JsonResponse|RedirectResponse
     {
         try {
             $area = CustomerArea::findOrFail($id);
-            $area->update($request->validated());
+            $code = strtoupper(trim((string) $area->areaCode));
 
-            return redirect()
-                ->route('areas.index')
-                ->with('success', 'Area updated successfully!');
+            $inUse = NewCustomer::query()
+                ->whereRaw('UPPER(custArea) = ?', [$code])
+                ->exists();
 
-        } catch (Exception $e) {
-            return redirect()
-                ->back()
-                ->withInput()
-                ->with('error', 'Failed to update area. Please try again.');
-        }
-    }
+            if ($inUse) {
+                $message = "Cannot delete \"{$area->areaName}\" because it is used by one or more customers.";
 
-    /**
-     * Remove the specified area from storage.
-     *
-     * @param int $id
-     * @return RedirectResponse
-     */
-    public function destroy(int $id): RedirectResponse
-    {
-        try {
-            $area = CustomerArea::findOrFail($id);
-            $areaName = $area->areaName;
+                if ($request->ajax() || $request->expectsJson() || $request->wantsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $message,
+                    ], 422);
+                }
+
+                return redirect()->back()->with('error', $message);
+            }
+
+            $name = $area->areaName;
             $area->delete();
 
-            return redirect()
-                ->route('areas.index')
-                ->with('success', "Area '{$areaName}' deleted successfully!");
+            if ($request->ajax() || $request->expectsJson() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => "Area \"{$name}\" deleted successfully!",
+                    'data' => [
+                        'id' => $id,
+                        'areaCode' => $code,
+                        'areaName' => $name,
+                    ],
+                ]);
+            }
 
+            return redirect()->back()->with('success', "Area \"{$name}\" deleted successfully!");
         } catch (Exception $e) {
-            return redirect()
-                ->route('areas.index')
-                ->with('error', 'Failed to delete area. Please try again.');
+            if ($request->ajax() || $request->expectsJson() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to delete area.',
+                ], 422);
+            }
+
+            return redirect()->back()->with('error', 'Failed to delete area.');
         }
     }
 
     /**
      * Get areas list for AJAX requests.
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function getsAreas(Request $request): JsonResponse
     {
         $query = $request->input('search');
-        
-        $areas = CustomerArea::when($query, function($q) use ($query) {
+
+        $areas = CustomerArea::when($query, function ($q) use ($query) {
             $q->where('areaCode', 'like', "%{$query}%")
-              ->orWhere('areaName', 'like', "%{$query}%");
+                ->orWhere('areaName', 'like', "%{$query}%");
         })->orderBy('areaName', 'asc')->get();
 
         return response()->json($areas);

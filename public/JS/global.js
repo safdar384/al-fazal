@@ -1,6 +1,106 @@
 let activeForm = null;
 
 /**
+ * Float a dropdown panel under an input using position:fixed so it appears
+ * above scroll/overflow containers (invoice product grids).
+ */
+function erpPositionFloatingDropdown(anchorEl, panelEl, options) {
+    if (!anchorEl || !panelEl) return;
+    options = options || {};
+    const minW = options.minWidth || 260;
+    const maxW = options.maxWidth || null;
+    const maxH = options.maxHeight || 320;
+    const rect = anchorEl.getBoundingClientRect();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    let width = Math.max(rect.width, minW);
+    if (maxW) {
+        width = Math.min(width, maxW);
+    }
+    let left = rect.left;
+    if (left + width > vw - 8) {
+        left = Math.max(8, vw - width - 8);
+    }
+    let top = rect.bottom + 4;
+    panelEl.style.position = 'fixed';
+    panelEl.style.left = left + 'px';
+    panelEl.style.top = top + 'px';
+    panelEl.style.width = width + 'px';
+    panelEl.style.minWidth = minW + 'px';
+    panelEl.style.maxHeight = maxH + 'px';
+    panelEl.style.zIndex = String(options.zIndex || 10650);
+    panelEl.style.right = 'auto';
+    panelEl.style.marginTop = '0';
+    panelEl.style.overflowY = 'auto';
+
+    const estH = Math.min(panelEl.scrollHeight || 200, maxH);
+    if (top + estH > vh - 8 && rect.top > estH + 8) {
+        top = Math.max(8, rect.top - estH - 4);
+        panelEl.style.top = top + 'px';
+    }
+}
+
+function erpResetFloatingDropdown(panelEl) {
+    if (!panelEl || !panelEl.style) return;
+    panelEl.style.position = '';
+    panelEl.style.top = '';
+    panelEl.style.left = '';
+    panelEl.style.width = '';
+    panelEl.style.minWidth = '';
+    panelEl.style.maxHeight = '';
+    panelEl.style.zIndex = '';
+    panelEl.style.right = '';
+    panelEl.style.marginTop = '';
+    panelEl.style.overflowY = '';
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.erp-invoice-product-wrap').forEach(function (wrap) {
+        wrap.addEventListener(
+            'scroll',
+            function () {
+                wrap.querySelectorAll('.productDropdown').forEach(function (drop) {
+                    if (window.getComputedStyle(drop).display === 'none') {
+                        return;
+                    }
+                    drop.style.display = 'none';
+                    erpResetFloatingDropdown(drop);
+                });
+            },
+            { passive: true }
+        );
+    });
+});
+
+/**
+ * Mobile / tablet: close slide-out sidebar after choosing a real destination link.
+ * AdminLTE PushMenu uses body.sidebar-open / sidebar-collapse under 992px.
+ */
+(function () {
+    const SIDEBAR_BREAKPOINT = 992;
+
+    function collapseSidebarMobile() {
+        if (window.innerWidth >= SIDEBAR_BREAKPOINT) {
+            return;
+        }
+        document.body.classList.remove('sidebar-open');
+        document.body.classList.add('sidebar-collapse');
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.app-sidebar a.nav-link[href]').forEach(function (anchor) {
+            const href = anchor.getAttribute('href');
+            if (!href || href === '#' || href.startsWith('javascript:')) {
+                return;
+            }
+            anchor.addEventListener('click', function () {
+                window.requestAnimationFrame(collapseSidebarMobile);
+            });
+        });
+    });
+})();
+
+/**
  * Show confirm modal for any action (Delete / Save / Update)
  * Supports passing string (formId) or object with full options
  * options = {
@@ -79,4 +179,58 @@ function confirmDelete(formId, title = 'Delete Confirmation', message = 'Are you
             }
         }
     });
+}
+
+/**
+ * Show popup message using SweetAlert2
+ * @param {string} type - 'success', 'error', 'warning', 'info', 'question'
+ * @param {string} title - Message title
+ * @param {string} text - Message text (optional)
+ * @param {number} timer - Auto close timer in ms (optional, default 2000)
+ */
+function showPopup(type, title, text = '', timer = 2000) {
+    const config = {
+        icon: type,
+        title: title,
+        showConfirmButton: false,
+        timer: timer,
+        timerProgressBar: true,
+        position: 'top-end',
+        toast: true,
+        showCloseButton: true
+    };
+    
+    if (text) {
+        config.text = text;
+    }
+    
+    Swal.fire(config);
+}
+
+/**
+ * Show success message
+ */
+function showSuccess(title, text = '', timer = 2000) {
+    showPopup('success', title, text, timer);
+}
+
+/**
+ * Show error message
+ */
+function showError(title, text = '', timer = 3000) {
+    showPopup('error', title, text, timer);
+}
+
+/**
+ * Show warning message
+ */
+function showWarning(title, text = '', timer = 2500) {
+    showPopup('warning', title, text, timer);
+}
+
+/**
+ * Show info message
+ */
+function showInfo(title, text = '', timer = 2000) {
+    showPopup('info', title, text, timer);
 }

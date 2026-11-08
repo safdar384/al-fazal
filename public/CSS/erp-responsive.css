@@ -1,0 +1,529 @@
+/**
+ * TradGate ERP — global responsive layer (Bootstrap 5 + AdminLTE 4)
+ * Loaded after adminlte.css. Dark-mode ready tokens for future themes.
+ */
+:root {
+    --erp-touch-min: 2.75rem;
+    --erp-mobile-nav-h: 3.75rem;
+    --erp-invoice-sticky-h: 3.35rem;
+    --erp-radius: 0.5rem;
+    --erp-content-max: 1400px;
+}
+
+/* Optional dark theme hook (add data-bs-theme="dark" on html when ready) */
+[data-bs-theme="dark"] {
+    --erp-chart-bg: transparent;
+}
+
+/* -------------------------------------------------------------------------
+   App shell — main column must occupy lte-app-main in AdminLTE grid
+   ------------------------------------------------------------------------- */
+.app-wrapper > .main-content {
+    grid-area: lte-app-main;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Nested pages use .app-main inside .main-content — do not double top offset */
+.main-content > .app-main {
+    padding-top: 0;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+/* Sticky top bar (column header stays visible while scrolling main column) */
+.app-wrapper > .app-header.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1035;
+}
+
+/* Sidebar: touch-friendly targets on small screens */
+@media (max-width: 991.98px) {
+    .app-sidebar .nav-link {
+        min-height: var(--erp-touch-min);
+        padding-top: 0.55rem;
+        padding-bottom: 0.55rem;
+    }
+    .app-sidebar .nav-header {
+        padding-top: 0.75rem;
+    }
+}
+
+/* -------------------------------------------------------------------------
+   Typography & spacing
+   ------------------------------------------------------------------------- */
+.main-content {
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+
+.app-main .app-content-header h3,
+.app-main .app-content-header h4 {
+    line-height: 1.25;
+}
+
+/* -------------------------------------------------------------------------
+   Forms — full width on xs, tighter gutters
+   ------------------------------------------------------------------------- */
+@media (max-width: 767.98px) {
+    .main-content .row.g-3,
+    .main-content .row.g-2 {
+        --bs-gutter-y: 0.5rem;
+    }
+    .main-content .app-content .container-fluid {
+        padding-left: max(0.5rem, env(safe-area-inset-left));
+        padding-right: max(0.5rem, env(safe-area-inset-right));
+    }
+}
+
+@media (max-width: 575.98px) {
+    .main-content .form-control:not(textarea),
+    .main-content .form-select {
+        font-size: 1rem; /* reduce iOS input zoom */
+    }
+    .main-content .btn:not(.btn-sm):not(.btn-xs) {
+        min-height: var(--erp-touch-min);
+    }
+    .main-content .d-flex.gap-2,
+    .main-content .d-flex.gap-3 {
+        flex-wrap: wrap;
+    }
+}
+
+/* -------------------------------------------------------------------------
+   Tables — horizontal scroll + compact density on phone
+   ------------------------------------------------------------------------- */
+.table-responsive {
+    -webkit-overflow-scrolling: touch;
+}
+
+.table-responsive.erp-table-compact {
+    font-size: 0.8125rem;
+}
+
+@media (max-width: 575.98px) {
+    .table-responsive.erp-table-compact .table th,
+    .table-responsive.erp-table-compact .table td {
+        padding: 0.35rem 0.4rem;
+        white-space: nowrap;
+    }
+}
+
+/* -------------------------------------------------------------------------
+   Navbar (mobile)
+   ------------------------------------------------------------------------- */
+@media (max-width: 991.98px) {
+    .app-header .navbar-nav .nav-link {
+        min-height: var(--erp-touch-min);
+        display: inline-flex;
+        align-items: center;
+    }
+    .app-header .dropdown-menu-lg {
+        min-width: min(22rem, calc(100vw - 1.25rem));
+        max-width: calc(100vw - 1rem);
+    }
+    .navbar-search-dropdown-mobile {
+        position: relative;
+        top: auto;
+        left: auto;
+        right: auto;
+        width: 100%;
+        max-height: min(50vh, 280px);
+        margin-top: 0.35rem;
+    }
+}
+
+/* -------------------------------------------------------------------------
+   Charts / widgets
+   ------------------------------------------------------------------------- */
+.erp-chart-box {
+    min-height: 180px;
+}
+
+@media (min-width: 768px) {
+    .erp-chart-box {
+        min-height: 220px;
+    }
+}
+
+/* -------------------------------------------------------------------------
+   Bottom quick navigation (mobile only)
+   ------------------------------------------------------------------------- */
+.erp-mobile-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1040;
+    display: flex;
+    justify-content: space-around;
+    align-items: stretch;
+    min-height: var(--erp-mobile-nav-h);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+    background: var(--bs-body-bg);
+    border-top: 1px solid var(--bs-border-color);
+    box-shadow: 0 -4px 18px rgba(15, 39, 71, 0.08);
+}
+
+.erp-mobile-nav__item {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15rem;
+    padding: 0.35rem 0.25rem;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--bs-secondary-color);
+    text-decoration: none;
+    border: 0;
+    background: transparent;
+    transition: color 0.2s ease, background 0.2s ease;
+}
+
+.erp-mobile-nav__item i {
+    font-size: 1.35rem;
+    line-height: 1;
+}
+
+.erp-mobile-nav__item:hover,
+.erp-mobile-nav__item:focus-visible {
+    color: var(--bs-primary);
+    background: rgba(13, 110, 253, 0.06);
+}
+
+.erp-mobile-nav__item.active {
+    color: var(--bs-primary);
+}
+
+@media (min-width: 992px) {
+    .erp-mobile-nav {
+        display: none !important;
+    }
+}
+
+@media print {
+    .erp-mobile-nav {
+        display: none !important;
+    }
+}
+
+body.erp-ui .main-content {
+    transition: padding-bottom 0.2s ease;
+}
+
+@media (max-width: 991.98px) {
+    body.erp-ui .main-content {
+        padding-bottom: calc(var(--erp-mobile-nav-h) + env(safe-area-inset-bottom, 0px) + 0.5rem);
+    }
+    body.erp-ui .main-content:has(.erp-invoice-page) {
+        padding-bottom: calc(
+            var(--erp-mobile-nav-h) + var(--erp-invoice-sticky-h) + env(safe-area-inset-bottom, 0px) + 0.85rem
+        );
+    }
+}
+
+/* -------------------------------------------------------------------------
+   Invoice / order entry pages (Sale, Purchase, Customer order)
+   ------------------------------------------------------------------------- */
+.erp-invoice-page .app-content > .container-fluid {
+    max-width: min(var(--erp-content-max), 100%);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (max-width: 575.98px) {
+    .erp-invoice-page .app-content-header {
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+    }
+    .erp-invoice-page .erp-invoice-header-rule {
+        margin-top: 0.35rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    .erp-invoice-page .card-header:not(.p-0) {
+        padding: 0.45rem 0.65rem !important;
+    }
+    .erp-invoice-page .card .card-body:not(.p-0) {
+        padding: 0.65rem !important;
+    }
+}
+
+/* Horizontal product grid — smooth scroll, sticky header row */
+.erp-invoice-product-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    scroll-behavior: smooth;
+}
+
+.erp-invoice-product-wrap > .table {
+    margin-bottom: 0;
+}
+
+.erp-invoice-product-wrap table {
+    min-width: 680px;
+}
+
+.erp-invoice-product-wrap thead th {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    vertical-align: middle;
+    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.12);
+    background-color: var(--bs-body-bg) !important;
+}
+
+.erp-invoice-product-wrap thead.table-primary th {
+    background-color: var(--bs-primary-bg-subtle) !important;
+}
+
+.erp-invoice-product-wrap thead.table-light th,
+.erp-invoice-page #itemsTable thead th {
+    background-color: var(--bs-secondary-bg) !important;
+}
+
+@media (max-width: 767.98px) {
+    .erp-invoice-page .product-variant-line {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 0.35rem !important;
+    }
+    .erp-invoice-page .variantWrapper {
+        min-width: 0 !important;
+        width: 100%;
+    }
+    .erp-invoice-page #productTable .btn-group .btn,
+    .erp-invoice-page #itemsTable .btn-group .btn {
+        min-width: 2.5rem;
+        min-height: 2.5rem;
+    }
+}
+
+/* Fixed bottom actions (above global mobile nav) */
+.erp-invoice-sticky-actions {
+    display: none;
+}
+
+@media (max-width: 991.98px) {
+    .erp-invoice-page .erp-invoice-sticky-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: calc(var(--erp-mobile-nav-h) + env(safe-area-inset-bottom, 0px));
+        z-index: 1038;
+        padding: 0.45rem 0.65rem;
+        min-height: var(--erp-invoice-sticky-h);
+        background: var(--bs-body-bg);
+        border-top: 1px solid var(--bs-border-color);
+        box-shadow: 0 -8px 24px rgba(15, 39, 71, 0.12);
+    }
+    .erp-invoice-page .erp-invoice-sticky-actions .btn {
+        min-height: 2.65rem;
+        font-weight: 600;
+    }
+}
+
+@media print {
+    .erp-invoice-sticky-actions {
+        display: none !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .erp-invoice-page .erp-invoice-sticky-actions {
+        display: none !important;
+    }
+}
+
+/* Cash Invoice — grow and shrink with the page width (same behavior as Sale Invoice) */
+.sale-invoice-fluid {
+    container-type: inline-size;
+    container-name: sale-invoice;
+}
+
+.sale-invoice-fluid .app-content > .container-fluid,
+.sale-invoice-fluid .app-content-header > .container-fluid {
+    max-width: 100%;
+    width: 100%;
+    padding-left: clamp(0.45rem, 1.4cqi, 1.35rem);
+    padding-right: clamp(0.45rem, 1.4cqi, 1.35rem);
+}
+
+.sale-invoice-fluid .app-content-header h3 {
+    font-size: clamp(1.05rem, 0.85rem + 1.1cqi, 1.55rem);
+}
+
+.sale-invoice-fields,
+.sale-invoice-extra,
+.sale-invoice-summary,
+.sale-invoice-split {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: clamp(0.4rem, 0.9cqi, 0.9rem);
+}
+
+.sale-invoice-fields > div,
+.sale-invoice-extra > div,
+.sale-invoice-summary > div {
+    flex: 1 1 9rem;
+    min-width: min(100%, 8rem);
+    max-width: 100%;
+}
+
+.sale-invoice-fields .sale-field-wide,
+.sale-invoice-extra .sale-field-wide {
+    flex: 2 1 14rem;
+    min-width: min(100%, 12rem);
+}
+
+.sale-invoice-fields > .sale-field-badge {
+    flex: 0 0 auto;
+    min-width: auto;
+    display: flex;
+    align-items: flex-end;
+}
+
+.sale-invoice-extra .sale-field-full,
+.sale-invoice-summary .sale-field-full {
+    flex: 1 1 100%;
+    min-width: 100%;
+}
+
+.sale-invoice-split > .card {
+    flex: 1 1 18rem;
+    min-width: min(100%, 16rem);
+    max-width: 100%;
+}
+
+.sale-invoice-fluid .form-label {
+    font-size: clamp(0.75rem, 0.68rem + 0.28cqi, 0.92rem);
+    margin-bottom: 0.25rem;
+}
+
+.sale-invoice-fluid .form-control,
+.sale-invoice-fluid .form-select {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    font-size: clamp(0.78rem, 0.7rem + 0.32cqi, 0.98rem);
+    min-height: clamp(1.85rem, 1.45rem + 1.15cqi, 2.45rem);
+    padding-top: clamp(0.15rem, 0.35cqi, 0.4rem);
+    padding-bottom: clamp(0.15rem, 0.35cqi, 0.4rem);
+}
+
+.sale-invoice-fluid textarea.form-control {
+    min-height: clamp(3.2rem, 2.4rem + 2cqi, 5rem);
+}
+
+.sale-invoice-fluid .card-header h5,
+.sale-invoice-fluid .card-header h6 {
+    font-size: clamp(0.85rem, 0.75rem + 0.4cqi, 1.1rem);
+}
+
+.sale-invoice-fluid .erp-invoice-product-wrap {
+    container-type: inline-size;
+    container-name: sale-products;
+}
+
+.sale-invoice-fluid .erp-invoice-product-wrap table {
+    width: 100%;
+    min-width: 40rem;
+    table-layout: fixed;
+}
+
+.sale-invoice-fluid #productTable th,
+.sale-invoice-fluid #productTable td {
+    padding: clamp(0.28rem, 0.45cqi, 0.55rem);
+    vertical-align: middle;
+    white-space: normal;
+}
+
+.sale-invoice-fluid #grandTotal {
+    font-size: clamp(1.05rem, 0.9rem + 0.7cqi, 1.45rem);
+}
+
+.sale-invoice-fluid #btnSaveInvoice {
+    min-height: clamp(2.2rem, 1.8rem + 1cqi, 2.75rem);
+    font-size: clamp(0.9rem, 0.8rem + 0.35cqi, 1.05rem);
+}
+
+.sale-invoice-fluid #productTable .form-control {
+    min-height: clamp(1.7rem, 1.35rem + 0.9cqi, 2.2rem);
+}
+
+.sale-invoice-fluid .product-variant-line {
+    min-width: 0;
+}
+
+.sale-invoice-fluid .product-variant-line > .flex-grow-1 {
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.sale-invoice-fluid .variantWrapper {
+    min-width: 0 !important;
+    width: clamp(5.5rem, 28%, 11rem);
+    flex: 0 1 clamp(5.5rem, 28%, 11rem);
+}
+
+.sale-invoice-fluid #productTable .btn-group {
+    display: flex;
+    width: 100%;
+}
+
+.sale-invoice-fluid #productTable .btn-group .btn {
+    flex: 1 1 auto;
+    padding: clamp(0.15rem, 0.3cqi, 0.35rem) clamp(0.2rem, 0.35cqi, 0.45rem);
+}
+
+.sale-invoice-fluid .input-group {
+    min-width: 0;
+    flex-wrap: nowrap;
+}
+
+.sale-invoice-fluid .input-group > .form-select,
+.sale-invoice-fluid .input-group > .form-control {
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.sale-invoice-fluid #bankPaymentsTable {
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
+}
+
+.sale-invoice-fluid #bankPaymentsTable .form-select,
+.sale-invoice-fluid #bankPaymentsTable .form-control {
+    min-width: 0;
+}
+
+.sale-invoice-fluid .cash-bank-match {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.65rem;
+}
+
+@container sale-products (max-width: 40rem) {
+    .sale-invoice-fluid .product-variant-line {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .sale-invoice-fluid .variantWrapper {
+        width: 100%;
+        flex-basis: auto;
+    }
+}

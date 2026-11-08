@@ -122,12 +122,16 @@
                                                 <i class="bi bi-upc-scan text-warning me-1"></i>
                                                 Customer Code <span class="text-danger">*</span>
                                             </label>
-                                            <input type="text" 
-                                                   class="form-control @error('custCode') is-invalid @enderror" 
-                                                   name="custCode" 
-                                                   value="{{ old('custCode', $customer->custCode) }}" 
+                                            <input type="text"
+                                                   class="form-control @error('custCode') is-invalid @enderror {{ !empty($codeLocked) ? 'bg-light' : '' }}"
+                                                   name="custCode"
+                                                   value="{{ old('custCode', $customer->custCode) }}"
                                                    autocomplete="off"
+                                                   @if(!empty($codeLocked)) readonly @endif
                                                    required>
+                                            @if(!empty($codeLocked))
+                                                <small class="text-muted">Code locked — ledger / transaction entries exist for this customer.</small>
+                                            @endif
                                             @error('custCode')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -331,17 +335,28 @@
                                                 <i class="bi bi-tag text-info me-1"></i>
                                                 Customer Category <span class="text-danger">*</span>
                                             </label>
-                                            <select class="form-select @error('custCatagory') is-invalid @enderror" 
-                                                    name="custCatagory" 
+                                            @php
+                                                $currentCatagory = old('custCatagory', $customer->custCatagory);
+                                                $fixedCatagories = $custCatagories ?? \App\Models\NewCustomer::CATEGORIES;
+                                                $currentTrim = trim((string) $currentCatagory);
+                                                if ($currentTrim !== '' && ! collect($fixedCatagories)->contains(fn ($c) => strcasecmp($c, $currentTrim) === 0)) {
+                                                    $fixedCatagories = array_merge([$currentTrim], $fixedCatagories);
+                                                }
+                                            @endphp
+                                            <select class="form-select @error('custCatagory') is-invalid @enderror"
+                                                    name="custCatagory"
+                                                    id="customerCatagorySelect"
                                                     required>
                                                 <option value="">-- Select Category --</option>
-                                                <option value="Retail" {{ old('custCatagory', $customer->custCatagory) == 'Retail' ? 'selected' : '' }}>Retail Customer</option>
-                                                <option value="Wholesale" {{ old('custCatagory', $customer->custCatagory) == 'Wholesale' ? 'selected' : '' }}>Wholesale Customer</option>
-                                                <option value="VIP" {{ old('custCatagory', $customer->custCatagory) == 'VIP' ? 'selected' : '' }}>VIP Customer</option>
-                                                <option value="Supplier" {{ old('custCatagory', $customer->custCatagory) == 'Supplier' ? 'selected' : '' }}>Supplier</option>
+                                                @foreach($fixedCatagories as $catagory)
+                                                    <option value="{{ $catagory }}"
+                                                        @selected(strtolower((string) $currentCatagory) === strtolower($catagory))>
+                                                        {{ $catagory }}
+                                                    </option>
+                                                @endforeach
                                             </select>
                                             @error('custCatagory')
-                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                <div class="invalid-feedback d-block">{{ $message }}</div>
                                             @enderror
                                         </div>
                                     </div>
@@ -561,6 +576,7 @@ $(document).ready(function() {
     // Auto-dismiss alerts
     setTimeout(() => $('.alert').fadeOut('slow'), 5000);
 });
+
 </script>
 
 @endsection

@@ -19,6 +19,18 @@ return new class extends Migration
             $table->decimal('opening_balance', 15, 2)->default(0);
             $table->enum('status', ['Active', 'Inactive'])->default('Active');
         });
+
+        Schema::create('ledgers', function (Blueprint $table) {
+            $table->id();
+            $table->date('entry_date');
+            $table->string('reference_no')->nullable();
+            $table->foreignId('account_id')->constrained('accounts')->onDelete('cascade');
+            $table->decimal('debit', 15, 2)->default(0);
+            $table->decimal('credit', 15, 2)->default(0);
+            $table->text('description')->nullable();
+            $table->string('category')->nullable();
+            $table->timestamps();
+        });
     }
 
     /**
@@ -26,6 +38,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('account');
+        Schema::dropIfExists('ledgers');
+        Schema::dropIfExists('accounts');
     }
 };

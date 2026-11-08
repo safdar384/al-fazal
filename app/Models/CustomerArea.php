@@ -17,16 +17,14 @@ class CustomerArea extends Model
     {
         parent::boot();
 
-        static::saving(function ($model) {
-            // Uppercase areaCode
-            if (!empty($model->areaCode)) {
-                $model->areaCode = strtoupper($model->areaCode);
+        static::saving(function (CustomerArea $model) {
+            if (! empty($model->areaCode)) {
+                $model->areaCode = strtoupper(trim((string) $model->areaCode));
             }
 
-            // Proper case for areaName and ajentName
             foreach (['areaName', 'ajentName'] as $field) {
-                if (!empty($model->$field)) {
-                    $model->$field = ucwords(strtolower($model->$field));
+                if (! empty($model->{$field})) {
+                    $model->{$field} = ucwords(strtolower(trim((string) $model->{$field})));
                 }
             }
         });

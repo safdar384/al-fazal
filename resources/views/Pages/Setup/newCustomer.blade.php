@@ -7,16 +7,15 @@
 <main class="app-main" id="main" tabindex="-1">
     <div class="app-content-header">
         <div class="container-fluid">
-            <div class="row align-items-center">
-                <div class="col-sm-6">
-                    <h3 class="mb-0 fw-bold">
-                        <i class="bi bi-shop-window text-primary me-2"></i>
-                        Add New Customer
+            <div class="row align-items-center gy-2">
+                <div class="col-12 col-md-6">
+                    <h3 class="mb-0 fw-bold" style="color:#0f2747;">
+                        <i class="bi bi-person-plus me-2"></i>Add New Customer
                     </h3>
-                    <p class="text-muted small mb-0">Create a new customer profile</p>
+                    <p class="text-muted small mb-0">Accounts · Create customer / supplier profile</p>
                 </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-end mb-0">
+                <div class="col-12 col-md-6">
+                    <ol class="breadcrumb float-md-end mb-0">
                         <li class="breadcrumb-item"><a href="{{ url('/dashboard') }}"><i class="bi bi-house-door me-1"></i>Home</a></li>
                         <li class="breadcrumb-item"><a href="{{ route('Customer.index') }}">Customers</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Add New</li>
@@ -28,15 +27,13 @@
 
     <div class="app-content">
         <div class="container-fluid">
-            
-            <!-- Validation Errors -->
             @if ($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0" role="alert">
+                <div class="alert alert-danger alert-dismissible fade show py-2" role="alert">
                 <div class="d-flex align-items-start">
-                    <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
-                    <div class="flex-grow-1">
-                        <h5 class="alert-heading mb-2">Please fix the following errors:</h5>
-                        <ul class="mb-0 ps-3">
+                        <i class="bi bi-exclamation-triangle-fill me-2 mt-1"></i>
+                        <div>
+                            <strong>Please fix the following errors:</strong>
+                            <ul class="mb-0 ps-3 small">
                             @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
                             @endforeach
@@ -47,39 +44,36 @@
             </div>
             @endif
 
-            <div class="row justify-content-center">
-                <div class="col-12">
-                    <form action="{{ route('Customer.store') }}" method="POST" id="customerForm">
+            <form action="{{ route('Customer.store') }}" method="POST" id="customerForm" class="nc-form"
+                  autocomplete="off" data-lpignore="true" data-1p-ignore="true">
                         @csrf
 
                         <div class="row g-3">
-                            <!-- Left Column -->
                             <div class="col-lg-6">
-                                <!-- Basic Information -->
-                                <div class="card border-0 shadow-sm mb-3">
-                                    <div class="card-body p-4">
-                                        <h6 class="text-primary mb-3 pb-2 border-bottom">
-                                            <i class="bi bi-info-circle me-2"></i>
-                                            Basic Information
+                        <div class="card nc-card border-0 h-100">
+                            <div class="card-header nc-card-head">
+                                <h6 class="mb-0 text-white fw-semibold">
+                                    <i class="bi bi-info-circle me-2"></i>Basic Information
                                         </h6>
-                                        
+                            </div>
+                            <div class="card-body p-3">
                                         <div class="mb-3">
-                                            <label class="form-label fw-semibold">
-                                                <i class="bi bi-geo-alt text-primary me-1"></i>
+                                    <label class="form-label fw-semibold nc-label">
                                                 Customer Area <span class="text-danger">*</span>
                                             </label>
                                             <div class="d-flex gap-2">
                                                 <select class="form-select select2 @error('custArea') is-invalid @enderror" 
                                                         name="custArea" 
-                                                        id="customerAreaSelect">
+                                                id="customerAreaSelect"
+                                                autocomplete="off">
                                                     <option value="">-- Select Area --</option>
                                                     @foreach($custAreas as $custArea)
-                                                        <option value="{{ $custArea->areaCode }}" {{ old('custArea') == $custArea->areaCode ? 'selected' : '' }}>
+                                                <option value="{{ $custArea->areaCode }}" @selected(old('custArea') == $custArea->areaCode)>
                                                             {{ $custArea->areaCode }} - {{ $custArea->areaName }}
                                                         </option>
                                                     @endforeach
                                                 </select>
-                                                <button type="button" class="btn btn-outline-success" onclick="openAreaModal()" title="Add New Area">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="openAreaModal()" title="Add New Area">
                                                     <i class="bi bi-plus-circle"></i>
                                                 </button>
                                             </div>
@@ -89,12 +83,9 @@
                                         </div>
 
                                         <div class="mb-3">
-                                            <label class="form-label fw-semibold">
-                                                <i class="bi bi-upc-scan text-primary me-1"></i>
+                                    <label class="form-label fw-semibold nc-label">
                                                 Customer Code
-                                                <span class="badge bg-success bg-opacity-10 text-success ms-2">
-                                                    <i class="bi bi-magic"></i> Auto
-                                                </span>
+                                        <span class="badge bg-success bg-opacity-10 text-success ms-1"><i class="bi bi-magic"></i> Auto</span>
                                             </label>
                                             <input type="text" 
                                                    class="form-control @error('custCode') is-invalid @enderror" 
@@ -105,14 +96,11 @@
                                             @error('custCode')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
-                                            <small class="form-text text-success">
-                                                <i class="bi bi-stars"></i> Will auto-generate if left blank (CUST001, CUST002...)
-                                            </small>
+                                    <small class="form-text text-muted">Auto: CUST001, CUST002...</small>
                                         </div>
 
                                         <div class="mb-3">
-                                            <label class="form-label fw-semibold">
-                                                <i class="bi bi-building text-primary me-1"></i>
+                                    <label class="form-label fw-semibold nc-label">
                                                 Business Name <span class="text-danger">*</span>
                                             </label>
                                             <input type="text" 
@@ -128,8 +116,7 @@
                                         </div>
 
                                         <div class="mb-3">
-                                            <label class="form-label fw-semibold">
-                                                <i class="bi bi-person text-primary me-1"></i>
+                                    <label class="form-label fw-semibold nc-label">
                                                 Customer Name <span class="text-danger">*</span>
                                             </label>
                                             <input type="text" 
@@ -138,6 +125,7 @@
                                                    value="{{ old('custName') }}"
                                                    placeholder="Enter customer name"
                                                    autocomplete="off" 
+                                           autofocus
                                                    required>
                                             @error('custName')
                                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -145,8 +133,7 @@
                                         </div>
 
                                         <div class="mb-3">
-                                            <label class="form-label fw-semibold">
-                                                <i class="bi bi-map text-primary me-1"></i>
+                                    <label class="form-label fw-semibold nc-label">
                                                 Customer Address <span class="text-danger">*</span>
                                             </label>
                                             <textarea class="form-control @error('custAddress') is-invalid @enderror" 
@@ -160,10 +147,9 @@
                                             @enderror
                                         </div>
 
-                                        <div class="row">
+                                <div class="row g-2">
                                             <div class="col-md-6 mb-3">
-                                                <label class="form-label fw-semibold">
-                                                    <i class="bi bi-building-check text-primary me-1"></i>
+                                        <label class="form-label fw-semibold nc-label">
                                                     City <span class="text-danger">*</span>
                                                 </label>
                                                 <input type="text" 
@@ -177,16 +163,10 @@
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
                                             </div>
-
                                             <div class="col-md-6 mb-3">
-                                                <label class="form-label fw-semibold">
-                                                    <i class="bi bi-telephone text-primary me-1"></i>
+                                        <label class="form-label fw-semibold nc-label">
                                                     Contact <span class="text-danger">*</span>
                                                 </label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text bg-light">
-                                                        <i class="bi bi-telephone-fill text-primary"></i>
-                                                    </span>
                                                     <input type="text" 
                                                            class="form-control @error('custContect') is-invalid @enderror" 
                                                            name="custContect" 
@@ -197,13 +177,11 @@
                                                     @error('custContect')
                                                         <div class="invalid-feedback">{{ $message }}</div>
                                                     @enderror
-                                                </div>
                                             </div>
                                         </div>
 
                                         <div class="mb-0">
-                                            <label class="form-label fw-semibold">
-                                                <i class="bi bi-book text-primary me-1"></i>
+                                    <label class="form-label fw-semibold nc-label">
                                                 Customer Page <span class="text-danger">*</span>
                                             </label>
                                             <input type="text" 
@@ -221,19 +199,16 @@
                                 </div>
                             </div>
 
-                            <!-- Right Column -->
                             <div class="col-lg-6">
-                                <!-- Financial Information -->
-                                <div class="card border-0 shadow-sm mb-3">
-                                    <div class="card-body p-4">
-                                        <h6 class="text-success mb-3 pb-2 border-bottom">
-                                            <i class="bi bi-cash-stack me-2"></i>
-                                            Financial Information
+                        <div class="card nc-card border-0 mb-3">
+                            <div class="card-header nc-card-head">
+                                <h6 class="mb-0 text-white fw-semibold">
+                                    <i class="bi bi-cash-stack me-2"></i>Financial Information
                                         </h6>
-
+                            </div>
+                            <div class="card-body p-3">
                                         <div class="mb-3">
-                                            <label class="form-label fw-semibold">
-                                                <i class="bi bi-percent text-info me-1"></i>
+                                    <label class="form-label fw-semibold nc-label">
                                                 Discount (%) <span class="text-danger">*</span>
                                             </label>
                                             <div class="input-group">
@@ -245,7 +220,7 @@
                                                        placeholder="0.00"
                                                        autocomplete="off" 
                                                        required>
-                                                <span class="input-group-text bg-info bg-opacity-10 text-info">%</span>
+                                        <span class="input-group-text">%</span>
                                                 @error('custdiscount')
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
@@ -253,14 +228,10 @@
                                         </div>
 
                                         <div class="mb-3">
-                                            <label class="form-label fw-semibold">
-                                                <i class="bi bi-calendar-week text-warning me-1"></i>
+                                    <label class="form-label fw-semibold nc-label">
                                                 Payment Term (Days) <span class="text-danger">*</span>
                                             </label>
                                             <div class="input-group">
-                                                <span class="input-group-text bg-light">
-                                                    <i class="bi bi-clock text-warning"></i>
-                                                </span>
                                                 <input type="number" 
                                                        class="form-control @error('custPayTermDay') is-invalid @enderror" 
                                                        name="custPayTermDay" 
@@ -268,7 +239,7 @@
                                                        placeholder="e.g., 30"
                                                        autocomplete="off" 
                                                        required>
-                                                <span class="input-group-text bg-light">Days</span>
+                                        <span class="input-group-text">Days</span>
                                                 @error('custPayTermDay')
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
@@ -276,12 +247,11 @@
                                         </div>
 
                                         <div class="mb-3">
-                                            <label class="form-label fw-semibold">
-                                                <i class="bi bi-credit-card text-success me-1"></i>
+                                    <label class="form-label fw-semibold nc-label">
                                                 Credit Limit <span class="text-danger">*</span>
                                             </label>
                                             <div class="input-group">
-                                                <span class="input-group-text bg-success bg-opacity-10 text-success fw-bold">Rs.</span>
+                                        <span class="input-group-text">Rs.</span>
                                                 <input type="number" 
                                                        step="0.01" 
                                                        class="form-control @error('custCreditLimit') is-invalid @enderror" 
@@ -297,8 +267,7 @@
                                         </div>
 
                                         <div class="mb-3">
-                                            <label class="form-label fw-semibold">
-                                                <i class="bi bi-calendar-date text-primary me-1"></i>
+                                    <label class="form-label fw-semibold nc-label">
                                                 Opening Date <span class="text-danger">*</span>
                                             </label>
                                             <input type="date" 
@@ -313,117 +282,165 @@
                                         </div>
 
                                         <div class="mb-0">
-                                            <label class="form-label fw-semibold">
-                                                <i class="bi bi-tag text-info me-1"></i>
+                                    <label class="form-label fw-semibold nc-label">
                                                 Customer Category <span class="text-danger">*</span>
                                             </label>
-                                            <select class="form-select @error('custCatagory') is-invalid @enderror" 
-                                                    name="custCatagory" 
-                                                    required>
-                                                <option value="">-- Select Category --</option>
-                                                <option value="Retail" {{ old('custCatagory') == 'Retail' ? 'selected' : '' }}>Retail Customer</option>
-                                                <option value="Wholesale" {{ old('custCatagory') == 'Wholesale' ? 'selected' : '' }}>Wholesale Customer</option>
-                                                <option value="VIP" {{ old('custCatagory') == 'VIP' ? 'selected' : '' }}>VIP Customer</option>
-                                                <option value="Supplier" {{ old('custCatagory') == 'Supplier' ? 'selected' : '' }}>Supplier</option>
-                                            </select>
+                                                <select class="form-select @error('custCatagory') is-invalid @enderror"
+                                                        name="custCatagory"
+                                                        id="customerCatagorySelect"
+                                            autocomplete="off"
+                                                        required>
+                                                    <option value="">-- Select Category --</option>
+                                        @foreach($custCatagories ?? \App\Models\NewCustomer::CATEGORIES as $catagory)
+                                            <option value="{{ $catagory }}"
+                                                @selected(strtolower((string) old('custCatagory')) === strtolower($catagory))>
+                                                {{ $catagory }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
                                             @error('custCatagory')
-                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                <div class="invalid-feedback d-block">{{ $message }}</div>
                                             @enderror
-                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Right Column -->
-                            <div class="col-lg-6">
-                                <!-- Quick Tips -->
-                                <div class="alert alert-info border-0 shadow-sm mb-3">
-                                    <h6 class="alert-heading">
-                                        <i class="bi bi-lightbulb-fill me-2"></i>
-                                        Quick Tips
+                        <div class="nc-tips">
+                            <h6 class="fw-semibold mb-2" style="color:#0f2747;">
+                                <i class="bi bi-lightbulb me-1"></i>Quick Tips
                                     </h6>
-                                    <ul class="mb-0 small ps-3">
-                                        <li><strong>Customer Code:</strong> Leave blank for auto-generation (CUST001, CUST002...)</li>
-                                        <li><strong>Area:</strong> Select existing or add new area</li>
-                                        <li><strong>Payment Terms:</strong> Number of days for payment</li>
+                            <ul class="mb-0 small ps-3 text-muted">
+                                <li><strong>Customer Code:</strong> Leave blank for auto-generation</li>
+                                <li><strong>Category:</strong> Retailers, WholeSale, Raw Material Supplier, Product Supplier, or Transport</li>
+                                <li><strong>Payment Terms:</strong> Days allowed for payment</li>
                                         <li><strong>Credit Limit:</strong> Maximum credit allowed</li>
                                     </ul>
-                                </div>
                             </div>
                         </div>
 
-                        <!-- Action Buttons -->
-                        <div class="card border-0 shadow-sm mt-3">
-                            <div class="card-footer bg-light border-0 py-3">
-                                <div class="row align-items-center">
-                                    <div class="col-md-6">
+                    <div class="col-12">
+                        <div class="card nc-card border-0">
+                            <div class="card-body py-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
                                         <small class="text-muted">
-                                            <i class="bi bi-asterisk text-danger me-1"></i>
-                                            Fields marked with <span class="text-danger fw-bold">*</span> are required
+                                    <span class="text-danger fw-bold">*</span> Required fields
                                         </small>
-                                    </div>
-                                    <div class="col-md-6 text-md-end mt-2 mt-md-0">
-                                        <a href="{{ route('Customer.index') }}" class="btn btn-light me-2">
-                                            <i class="bi bi-arrow-left me-1"></i>
-                                            Back to List
-                                        </a>
-                                        <button type="reset" class="btn btn-outline-secondary me-2">
-                                            <i class="bi bi-arrow-clockwise me-1"></i>
-                                            Reset
+                                <div class="d-flex flex-wrap gap-2">
+                                    <a href="{{ route('Customer.index') }}" class="btn btn-outline-secondary btn-sm">
+                                        <i class="bi bi-arrow-left me-1"></i>Back to List
+                                    </a>
+                                    <button type="reset" class="btn btn-outline-secondary btn-sm">
+                                        <i class="bi bi-arrow-clockwise me-1"></i>Reset
                                         </button>
-                                        <button type="submit" class="btn btn-primary px-4">
-                                            <i class="bi bi-save me-1"></i>
-                                            Save Customer
+                                    <button type="submit" class="btn btn-sm text-white px-4" style="background:#0f2747;border-color:#0f2747;">
+                                        <i class="bi bi-save me-1"></i>Save Customer
                                         </button>
-                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 </main>
 
-<!-- Area Modal -->
+{{-- Area Modal --}}
 <div class="modal fade" id="areaModal" tabindex="-1" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0 shadow">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title">
-                    <i class="bi bi-geo-alt-fill me-2"></i>
-                    Add New Area
-                </h5>
+            <div class="modal-header nc-modal-head">
+                <h5 class="modal-title"><i class="bi bi-geo-alt-fill me-2"></i>Manage Areas</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <form id="areaForm">
                 @csrf
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Area Code</label>
-                        <input type="text" name="areaCode" class="form-control" autocomplete="off" required>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold nc-label">Area Code <span class="text-danger">*</span></label>
+                            <input type="text" name="areaCode" class="form-control" placeholder="e.g., A01" autocomplete="off" required>
                         <span class="text-danger error-areaCode"></span>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Area Name</label>
-                        <input type="text" name="areaName" class="form-control" autocomplete="off" required>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold nc-label">Area Name <span class="text-danger">*</span></label>
+                            <input type="text" name="areaName" class="form-control" placeholder="Area name" autocomplete="off" required>
                         <span class="text-danger error-areaName"></span>  
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Agent Name</label>
-                        <input type="text" name="agentName" class="form-control" autocomplete="off">
-                        <span class="text-danger error-agentName"></span>
+                        <div class="col-md-5">
+                            <label class="form-label fw-semibold nc-label">Agent Name</label>
+                        <select name="ajentName" class="form-select">
+                            <option value="">-- Select Agent --</option>
+                            @foreach($agentLabours ?? [] as $agentLabour)
+                                <option value="{{ $agentLabour->labourName }}">
+                                    {{ $agentLabour->labourCode }} - {{ $agentLabour->labourName }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <span class="text-danger error-ajentName"></span>
                     </div>
                 </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle me-1"></i>
-                        Cancel
+
+                    <div class="border-top pt-3">
+                        <label class="form-label fw-semibold mb-2">Existing Areas</label>
+                        <div class="table-responsive nc-area-table-wrap">
+                            <table class="table table-sm table-hover align-middle mb-0" id="areaLookupTable">
+                                <thead>
+                                    <tr>
+                                        <th style="width:18%;">Code</th>
+                                        <th style="width:32%;">Area Name</th>
+                                        <th style="width:35%;">Agent</th>
+                                        <th style="width:15%;" class="text-end">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="areaLookupBody">
+                                    @forelse($custAreas ?? [] as $area)
+                                        @php
+                                            $isUsed = in_array(strtoupper(trim((string) $area->areaCode)), $usedAreaCodes ?? [], true);
+                                        @endphp
+                                        <tr class="area-lookup-item"
+                                            data-id="{{ $area->id }}"
+                                            data-code="{{ $area->areaCode }}"
+                                            data-in-use="{{ $isUsed ? '1' : '0' }}">
+                                            <td><strong>{{ $area->areaCode }}</strong></td>
+                                            <td>
+                                                {{ $area->areaName }}
+                                                @if($isUsed)
+                                                    <span class="badge bg-secondary bg-opacity-25 text-secondary ms-1">In use</span>
+                                                @endif
+                                            </td>
+                                            <td>{{ $area->ajentName ?: '—' }}</td>
+                                            <td class="text-end">
+                                                @if($isUsed)
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary" disabled title="Cannot delete: used by customers">
+                                                        <i class="bi bi-lock"></i>
+                                                    </button>
+                                                @else
+                                                    <button type="button"
+                                                            class="btn btn-sm btn-outline-danger btn-delete-area"
+                                                            title="Remove area"
+                                                            data-id="{{ $area->id }}"
+                                                            data-code="{{ $area->areaCode }}"
+                                                            data-name="{{ $area->areaName }}">
+                                                        <i class="bi bi-trash"></i>
                     </button>
-                    <button type="submit" class="btn btn-success">
-                        <i class="bi bi-save me-1"></i>
-                        Save Area
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr class="area-lookup-empty">
+                                            <td colspan="4" class="text-muted text-center small py-3">No areas yet.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                        <small class="text-muted d-block mt-2">Area in use by a customer cannot be deleted.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-sm text-white" style="background:#0f2747;border-color:#0f2747;">
+                        <i class="bi bi-save me-1"></i>Save Area
                     </button>
                 </div>
             </form>
@@ -431,91 +448,101 @@
     </div>
 </div>
 
+@push('styles')
 <style>
-.card {
-    border-radius: 12px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.1) !important;
-}
-
-.form-label {
-    margin-bottom: 0.5rem;
-    color: #495057;
-    font-size: 0.95rem;
-}
-
-.form-control:focus, .form-select:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.15);
-}
-
-.input-group-text {
-    border-radius: 0.375rem 0 0 0.375rem;
-}
-
-.btn {
-    border-radius: 0.5rem;
-    padding: 0.5rem 1.25rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-}
-
-.btn:hover {
-    transform: translateY(-1px);
-}
-
-.select2-container--default .select2-selection--single {
-    height: 38px !important;
-    border-color: #dee2e6;
-}
-
-.select2-container--default .select2-selection--single .select2-selection__rendered {
-    line-height: 36px !important;
-}
-
-.card-body {
-    animation: fadeInUp 0.5s ease-out;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
+    .nc-card {
+        box-shadow: 0 2px 12px rgba(15, 39, 71, 0.08);
+        border-radius: 4px;
+        overflow: visible;
+        border: 1px solid #d5dde8;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    .nc-card-head {
+        background: linear-gradient(135deg, #0f2747 0%, #1a4a8a 100%);
+        border: none;
+        border-radius: 4px 4px 0 0;
+        padding: 0.75rem 1rem;
     }
-}
+    .nc-label { font-size: 0.78rem; color: #0f2747; margin-bottom: 0.25rem; }
+    .nc-form .form-control,
+    .nc-form .form-select { font-size: 0.9rem; border-color: #d5dde8; }
+    .nc-form .form-control:focus,
+    .nc-form .form-select:focus {
+        border-color: #1a4a8a;
+        box-shadow: 0 0 0 0.2rem rgba(15, 39, 71, 0.12);
+    }
+    .nc-form .btn-outline-secondary:hover {
+        background: #0f2747;
+        border-color: #0f2747;
+        color: #fff;
+    }
+    .nc-tips {
+        background: #f0f5fb;
+        border: 1px solid #b8c9de;
+        border-left: 4px solid #0f2747;
+        border-radius: 4px;
+        padding: 0.85rem 1rem;
+    }
+    .nc-modal-head {
+        background: linear-gradient(135deg, #0f2747 0%, #1a4a8a 100%);
+        color: #fff;
+    }
+    .nc-area-table-wrap {
+        max-height: 240px;
+        overflow-y: auto;
+        border: 1px solid #d5dde8;
+        border-radius: 4px;
+    }
+    #areaLookupTable thead th {
+        background: #0f2747;
+        color: #fff;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        border: none;
+        padding: 0.55rem 0.65rem;
+    }
+    #areaLookupTable tbody td {
+        font-size: 0.85rem;
+        padding: 0.45rem 0.65rem;
+        border-color: #e8eef5;
+    }
+    .select2-container--bootstrap-5 .select2-selection {
+        border: 1px solid #d5dde8 !important;
+        min-height: 38px;
+    }
+    .select2-container--bootstrap-5.select2-container--focus .select2-selection,
+    .select2-container--bootstrap-5.select2-container--open .select2-selection {
+        border-color: #1a4a8a !important;
+        box-shadow: 0 0 0 0.2rem rgba(15, 39, 71, 0.12) !important;
+    }
+    .select2-container--open { z-index: 1060 !important; }
+    .select2-dropdown { z-index: 1061 !important; }
 </style>
+@endpush
 
 <script>
 $(document).ready(function() {
-    // Initialize Select2
     $('.select2').select2({
         theme: 'bootstrap-5',
-        width: '100%'
+        width: '100%',
+        dropdownParent: $(document.body)
     });
 
-    // Auto-uppercase customer code
     $('input[name="custCode"]').on('input', function() {
         if (this.value.trim() !== '') {
             this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
         }
     });
 
-    // Auto-capitalize names
     $('input[name="custName"], input[name="bussnessName"], input[name="custCity"]').on('blur', function() {
         const words = this.value.toLowerCase().split(' ');
         this.value = words.map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     });
 
-    // Format phone number
     $('input[name="custContect"]').on('blur', function() {
         let value = this.value.replace(/\D/g, '');
         if (value.length === 11 && value.startsWith('03')) {
@@ -523,60 +550,305 @@ $(document).ready(function() {
         }
     });
 
-    // Auto-dismiss alerts
+    // Area modal: Code UPPERCASE, Name/Agent Proper Case
+    $('#areaModal input[name="areaCode"]').on('input', function() {
+        if (this.value.trim() !== '') {
+            this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        }
+    });
+    $('#areaModal input[name="areaName"], #areaModal input[name="ajentName"]').on('blur', function() {
+        if (!this.value.trim()) return;
+        const words = this.value.toLowerCase().split(' ');
+        this.value = words.map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    });
+
     setTimeout(() => $('.alert').fadeOut('slow'), 5000);
 });
 
-// Area Modal Functions
 function openAreaModal() {
     $('#areaModal').modal('show');
 }
 
+function appendAreaTableRow(area) {
+    $('#areaLookupBody .area-lookup-empty').remove();
+    const agent = area.ajentName ? area.ajentName : '—';
+    const row = `
+        <tr class="area-lookup-item" data-id="${area.id}" data-code="${area.areaCode}" data-in-use="0">
+            <td><strong>${area.areaCode}</strong></td>
+            <td>${area.areaName}</td>
+            <td>${agent}</td>
+            <td class="text-end">
+                <button type="button" class="btn btn-sm btn-outline-danger btn-delete-area"
+                        title="Remove area" data-id="${area.id}" data-code="${area.areaCode}" data-name="${area.areaName}">
+                <i class="bi bi-trash"></i>
+            </button>
+            </td>
+        </tr>`;
+    $('#areaLookupBody').prepend(row);
+}
+
 $('#areaForm').on('submit', function(e) {
     e.preventDefault();
-    
-    $('.error-areaCode, .error-areaName, .error-agentName').text('');
-    
+    const $f = $(this);
+    $('.error-areaCode, .error-areaName, .error-ajentName').text('');
+
     $.ajax({
         url: '{{ route("area.store") }}',
         method: 'POST',
-        data: $(this).serialize(),
+        data: $f.serialize(),
+        dataType: 'json',
+        headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
         success: function(response) {
             if (response.success) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success!',
-                    text: 'Area added successfully!',
-                    timer: 2000,
-                    showConfirmButton: false
-                });
-                
-                $('#customerAreaSelect').append(
-                    $('<option>', {
-                        value: response.area.areaCode,
-                        text: response.area.areaCode + ' - ' + response.area.areaName,
-                        selected: true
-                    })
-                );
-                
-                $('#areaModal').modal('hide');
-                $('#areaForm')[0].reset();
+                const area = response.area;
+                const exists = $('#customerAreaSelect option').filter(function() {
+                    return String($(this).val()).toUpperCase() === String(area.areaCode).toUpperCase();
+                }).length > 0;
+
+                if (!exists) {
+                    $('#customerAreaSelect').append(
+                        $('<option>', {
+                            value: area.areaCode,
+                            text: area.areaCode + ' - ' + area.areaName,
+                            selected: true
+                        })
+                    ).trigger('change');
+                    appendAreaTableRow(area);
+                } else {
+                    $('#customerAreaSelect').val(area.areaCode).trigger('change');
+                }
+
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Area added successfully!',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                }
+
+                $f[0].reset();
             }
         },
         error: function(xhr) {
-            if (xhr.status === 422) {
+            if (xhr.status === 422 && xhr.responseJSON?.errors) {
                 const errors = xhr.responseJSON.errors;
                 if (errors.areaCode) $('.error-areaCode').text(errors.areaCode[0]);
                 if (errors.areaName) $('.error-areaName').text(errors.areaName[0]);
-                if (errors.agentName) $('.error-agentName').text(errors.agentName[0]);
+                if (errors.ajentName) $('.error-ajentName').text(errors.ajentName[0]);
+            } else if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: xhr.responseJSON?.message || 'Failed to add area.'
+                });
             }
         }
     });
 });
 
+$(document).on('click', '.btn-delete-area', function() {
+    const id = $(this).data('id');
+    const code = $(this).data('code');
+    const name = $(this).data('name');
+    const $btn = $(this);
+
+    const doDelete = function() {
+        $.ajax({
+            url: '{{ url('areas') }}/' + id,
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                _method: 'DELETE'
+            },
+            dataType: 'json',
+            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            success: function(response) {
+                if (response.success) {
+                    $btn.closest('.area-lookup-item').remove();
+                    $('#customerAreaSelect option').filter(function() {
+                        return String($(this).val()).toUpperCase() === String(code).toUpperCase();
+                    }).remove();
+
+                    if (String($('#customerAreaSelect').val() || '').toUpperCase() === String(code).toUpperCase()) {
+                        $('#customerAreaSelect').val('').trigger('change');
+                    }
+
+                    if ($('#areaLookupBody .area-lookup-item').length === 0) {
+                        $('#areaLookupBody').html('<tr class="area-lookup-empty"><td colspan="4" class="text-muted text-center small py-3">No areas yet.</td></tr>');
+                    }
+
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Deleted',
+                            text: response.message || 'Area removed.',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    }
+                }
+            },
+            error: function(xhr) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Cannot Delete',
+                        text: xhr.responseJSON?.message || 'Failed to delete area.'
+                    });
+                } else {
+                    alert(xhr.responseJSON?.message || 'Failed to delete area.');
+                }
+            }
+        });
+    };
+
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Remove area?',
+            text: 'Delete "' + name + '" (' + code + ') from the list?',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#dc3545'
+        }).then(function(result) {
+            if (result.isConfirmed) doDelete();
+        });
+    } else if (confirm('Delete "' + name + '"?')) {
+        doDelete();
+    }
+});
+
 $('#areaModal').on('hidden.bs.modal', function() {
     $('#areaForm')[0].reset();
-    $('.error-areaCode, .error-areaName, .error-agentName').text('');
+    $('.error-areaCode, .error-areaName, .error-ajentName').text('');
+});
+
+function clearCustomerFieldErrors() {
+    $('#customerForm .is-invalid').removeClass('is-invalid');
+    $('#customerForm .nc-ajax-error').remove();
+    $('#customerForm .alert-danger').remove();
+}
+
+function showCustomerFieldErrors(errors) {
+    Object.keys(errors || {}).forEach(function(field) {
+        const $input = $('#customerForm [name="' + field + '"]');
+        if (!$input.length) return;
+        $input.addClass('is-invalid');
+        const msg = $('<div class="invalid-feedback d-block nc-ajax-error"></div>').text(errors[field][0]);
+        if ($input.hasClass('select2-hidden-accessible')) {
+            $input.next('.select2').after(msg);
+        } else {
+            $input.after(msg);
+        }
+    });
+}
+
+function focusCustomerCode() {
+    const $code = $('#customerForm input[name="custCode"]');
+    if ($code.length) {
+        $code.trigger('focus');
+        if (typeof $code[0].select === 'function') $code[0].select();
+    }
+}
+
+function resetCustomerFormKeepDefaults() {
+    const form = document.getElementById('customerForm');
+    if (!form) return;
+    const keptArea = $('#customerAreaSelect').val();
+    form.reset();
+    // Keep Area selected after save
+    $('#customerAreaSelect').val(keptArea || '').trigger('change');
+    const $date = $('#customerForm [name="custOppDate"]');
+    if ($date.length) {
+        $date.val(@json(now()->format('Y-m-d')));
+    }
+    clearCustomerFieldErrors();
+}
+
+$('#customerForm').on('submit', function(e) {
+    e.preventDefault();
+    clearCustomerFieldErrors();
+    
+    const $btn = $(this).find('button[type="submit"]').prop('disabled', true);
+    const originalHtml = $btn.html();
+    $btn.html('<span class="spinner-border spinner-border-sm me-1"></span>Saving...');
+    
+    $.ajax({
+        url: this.action,
+        method: 'POST',
+        data: $(this).serialize(),
+        dataType: 'json',
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    }).done(function(res) {
+        resetCustomerFormKeepDefaults();
+
+        const message = (res && res.message) ? res.message : 'Customer created successfully!';
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'success',
+                title: 'Saved!',
+                text: message,
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#0f2747',
+                allowOutsideClick: false,
+                allowEscapeKey: true,
+                didOpen: function() {
+                    const btn = Swal.getConfirmButton();
+                    if (btn) btn.focus();
+                }
+            }).then(function() {
+                focusCustomerCode();
+            });
+        } else {
+            alert(message);
+            focusCustomerCode();
+        }
+    }).fail(function(xhr) {
+        const errors = xhr.responseJSON && xhr.responseJSON.errors;
+        if (errors) {
+            showCustomerFieldErrors(errors);
+            const first = Object.values(errors)[0];
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Validation',
+                    text: (first && first[0]) || 'Please fix the errors.',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#0f2747',
+                    didOpen: function() {
+                        const btn = Swal.getConfirmButton();
+                        if (btn) btn.focus();
+                    }
+                });
+            }
+            return;
+        }
+        const msg = (xhr.responseJSON && xhr.responseJSON.message) || 'Could not save customer.';
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: msg,
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#0f2747',
+                didOpen: function() {
+                    const btn = Swal.getConfirmButton();
+                    if (btn) btn.focus();
+                }
+            });
+        } else {
+            alert(msg);
+        }
+    }).always(function() {
+        $btn.prop('disabled', false).html(originalHtml);
+    });
 });
 </script>
 

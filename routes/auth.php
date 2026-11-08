@@ -1,35 +1,31 @@
 <?php
 
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
-use Livewire\Volt\Volt;
 
 Route::middleware('guest')->group(function () {
-    Volt::route('login', 'auth.login')
-        ->name('login');
+    Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('login', [LoginController::class, 'login']);
 
-    Volt::route('register', 'auth.register')
-        ->name('register');
+    Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+    Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 
-    Volt::route('forgot-password', 'auth.forgot-password')
-        ->name('password.request');
-
-    Volt::route('reset-password/{token}', 'auth.reset-password')
-        ->name('password.reset');
-
+    Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+    Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 });
 
 Route::middleware('auth')->group(function () {
-    Volt::route('verify-email', 'auth.verify-email')
-        ->name('verification.notice');
-
-    Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
+    Route::get('email/verify', [VerifyEmailController::class, 'show'])->name('verification.notice');
+    Route::get('email/verify/{id}/{hash}', [VerifyEmailController::class, 'verify'])
         ->middleware(['signed', 'throttle:6,1'])
         ->name('verification.verify');
 
-    Volt::route('confirm-password', 'auth.confirm-password')
-        ->name('password.confirm');
-});
+    Route::post('email/verification-notification', [VerifyEmailController::class, 'send'])
+        ->middleware('throttle:6,1')
+        ->name('verification.send');
 
-Route::post('logout', App\Livewire\Actions\Logout::class)
-    ->name('logout');
+    Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+});

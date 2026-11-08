@@ -44,6 +44,17 @@ class UpdateProductRequest extends FormRequest
                 'string',
                 'max:255'
             ],
+            'unitPerPackName' => [
+                'required',
+                'string',
+                'max:100'
+            ],
+            'piecesPerUnit' => [
+                'required',
+                'integer',
+                'min:1',
+                'max:999999'
+            ],
             'saleRate' => [
                 'required',
                 'numeric',
@@ -70,6 +81,40 @@ class UpdateProductRequest extends FormRequest
                 'string',
                 'max:100'
             ],
+            'image' => [
+                'nullable',
+                'image',
+                'mimes:jpeg,jpg,png,webp',
+                'max:5120',
+            ],
+            'remove_image' => ['nullable', 'boolean'],
+            'variants' => ['nullable', 'array'],
+            'variants.*.name' => ['nullable', 'string', 'max:100'],
+            'variants.*.value' => ['nullable', 'string', 'max:100'],
+            'variants.*.additionalCost' => ['nullable', 'numeric', 'min:0'],
+            'variants.*.additionalPrice' => ['nullable', 'numeric', 'min:0'],
+            'variants.*.stockQty' => ['nullable', 'numeric', 'min:0'],
+            'variants.*.image' => [
+                'nullable',
+                'image',
+                'mimes:jpeg,jpg,png,webp',
+                'max:5120',
+            ],
+            'existing_variants' => ['nullable', 'array'],
+            'existing_variants.*.name' => ['nullable', 'string', 'max:100'],
+            'existing_variants.*.value' => ['nullable', 'string', 'max:100'],
+            'existing_variants.*.additionalCost' => ['nullable', 'numeric', 'min:0'],
+            'existing_variants.*.additionalPrice' => ['nullable', 'numeric', 'min:0'],
+            'existing_variants.*.stockQty' => ['nullable', 'numeric', 'min:0'],
+            'existing_variants.*.remove_image' => ['nullable', 'boolean'],
+            'existing_variants.*.image' => [
+                'nullable',
+                'image',
+                'mimes:jpeg,jpg,png,webp',
+                'max:5120',
+            ],
+            'deleted_variants' => ['nullable', 'array'],
+            'deleted_variants.*' => ['integer'],
         ];
     }
 
@@ -83,6 +128,9 @@ class UpdateProductRequest extends FormRequest
             'companyName.required' => 'Company name is required.',
             'colourName.required' => 'Colour is required.',
             'pakingName.required' => 'Packing type is required.',
+            'unitPerPackName.required' => 'Unit per pack is required.',
+            'piecesPerUnit.required' => 'Pieces per unit is required.',
+            'piecesPerUnit.min' => 'Pieces per unit must be at least 1.',
             'saleRate.required' => 'Sale rate is required.',
             'saleRate.min' => 'Sale rate cannot be negative.',
             'costRate.required' => 'Cost rate is required.',
@@ -90,6 +138,15 @@ class UpdateProductRequest extends FormRequest
             'lessQty.required' => 'Minimum quantity is required.',
             'stockQty.required' => 'Stock quantity is required.',
             'catagoryName.required' => 'Category is required.',
+            'image.image' => 'Product image must be a valid image file.',
+            'image.mimes' => 'Product image must be JPG, JPEG, PNG, or WEBP.',
+            'image.max' => 'Product image may not be greater than 5MB before optimization.',
+            'variants.*.image.image' => 'Each variant image must be a valid image file.',
+            'variants.*.image.mimes' => 'Variant images must be JPG, JPEG, PNG, or WEBP.',
+            'variants.*.image.max' => 'Variant images may not be greater than 5MB before optimization.',
+            'existing_variants.*.image.image' => 'Each variant image must be a valid image file.',
+            'existing_variants.*.image.mimes' => 'Variant images must be JPG, JPEG, PNG, or WEBP.',
+            'existing_variants.*.image.max' => 'Variant images may not be greater than 5MB before optimization.',
         ];
     }
 }

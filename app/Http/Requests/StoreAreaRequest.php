@@ -14,6 +14,17 @@ class StoreAreaRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'areaCode' => strtoupper(trim((string) $this->input('areaCode', ''))),
+            'areaName' => ucwords(strtolower(trim((string) $this->input('areaName', '')))),
+            'ajentName' => $this->filled('ajentName')
+                ? ucwords(strtolower(trim((string) $this->input('ajentName'))))
+                : null,
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      */

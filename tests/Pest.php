@@ -15,6 +15,10 @@ pest()->extend(Tests\TestCase::class)
     ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
     ->in('Feature');
 
+// Auth/session security: minimal schema in the test file (no full migrate:fresh).
+pest()->extend(Tests\TestCase::class)
+    ->in('Auth');
+
 /*
 |--------------------------------------------------------------------------
 | Expectations

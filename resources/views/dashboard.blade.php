@@ -9,10 +9,10 @@
           <!--begin::Container-->
           <div class="container-fluid">
             <!--begin::Row-->
-            <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Dashboard</h3></div>
-              <div class="col-sm-6">
-                <ol class="breadcrumb float-sm-end">
+            <div class="row align-items-center gy-2">
+              <div class="col-12 col-md-6"><h3 class="mb-0">Dashboard</h3></div>
+              <div class="col-12 col-md-6">
+                <ol class="breadcrumb float-md-end mb-0">
                   <li class="breadcrumb-item"><a href="#">Home</a></li>
                   <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
                 </ol>
@@ -26,8 +26,8 @@
           <!--begin::Container-->
           <div class="container-fluid">
             <!--begin::Row-->
-            <div class="row">
-              <div class="col-lg-6">
+            <div class="row g-3">
+              <div class="col-12 col-xl-6">
                 <div class="card mb-4">
                   <div class="card-header border-0">
                     <div class="d-flex justify-content-between">
@@ -48,7 +48,7 @@
                       </p>
                     </div>
                     <!-- /.d-flex -->
-                    <div class="position-relative mb-4"><div id="visitors-chart"></div></div>
+                    <div class="position-relative mb-4 erp-chart-box"><div id="visitors-chart"></div></div>
                     <div class="d-flex flex-row justify-content-end">
                       <span class="me-2">
                         <i class="bi bi-square-fill text-primary"></i> This Week
@@ -169,35 +169,42 @@
                 <!-- /.card -->
               </div>
               <!-- /.col-md-6 -->
-              <div class="col-lg-6">
+              <div class="col-12 col-xl-6">
                 <div class="card mb-4">
                   <div class="card-header border-0">
                     <div class="d-flex justify-content-between">
-                      <h3 class="card-title">Sales</h3>
+                      <h3 class="card-title">Sales & Purchase</h3>
                       <a
-                        href="javascript:void(0);"
+                        href="{{ route('reports.hub') }}"
                         class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
-                        >View Report</a
+                        >Reporting Dashboard</a
                       >
                     </div>
                   </div>
                   <div class="card-body">
-                    <div class="d-flex">
-                      <p class="d-flex flex-column">
-                        <span class="fw-bold fs-5">$18,230.00</span> <span>Sales Over Time</span>
-                      </p>
-                      <p class="ms-auto d-flex flex-column text-end">
-                        <span class="text-success"> <i class="bi bi-arrow-up"></i> 33.1% </span>
-                        <span class="text-secondary">Since Past Year</span>
-                      </p>
+                    <div class="row g-3">
+                      <div class="col-md-6 col-xl-4">
+                        @include('reports.sales.partials.links')
+                      </div>
+                      <div class="col-md-6 col-xl-4">
+                        @include('reports.purchases.partials.links')
+                      </div>
+                      <div class="col-md-6 col-xl-4">
+                        @include('reports.customers.partials.links')
+                      </div>
+                      <div class="col-md-6 col-xl-4">
+                        @include('reports.labor.partials.links')
+                      </div>
+                      <div class="col-md-6 col-xl-4">
+                        @include('reports.expense.partials.links')
+                      </div>
+                      <div class="col-md-6 col-xl-4">
+                        @include('reports.products.partials.links')
+                      </div>
                     </div>
-                    <!-- /.d-flex -->
-                    <div class="position-relative mb-4"><div id="sales-chart"></div></div>
-                    <div class="d-flex flex-row justify-content-end">
-                      <span class="me-2">
-                        <i class="bi bi-square-fill text-primary"></i> This year
-                      </span>
-                      <span> <i class="bi bi-square-fill text-secondary"></i> Last year </span>
+                    <div class="mt-3 text-muted small">
+                      <i class="bi bi-info-circle me-1"></i>
+                      Open a report, apply filters, then print or download as PDF.
                     </div>
                   </div>
                 </div>

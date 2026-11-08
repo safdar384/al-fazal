@@ -34,7 +34,8 @@ return [
 
     'lifetime' => (int) env('SESSION_LIFETIME', 120),
 
-    'expire_on_close' => env('SESSION_EXPIRE_ON_CLOSE', false),
+    // Must be real bool — env("false") is a non-empty string and would stay "on".
+    'expire_on_close' => filter_var(env('SESSION_EXPIRE_ON_CLOSE', true), FILTER_VALIDATE_BOOLEAN),
 
     /*
     |--------------------------------------------------------------------------

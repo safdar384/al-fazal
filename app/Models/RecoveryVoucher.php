@@ -2,17 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;  // ✅ add this
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;  // ✅ add this
 
 class RecoveryVoucher extends Model
 {
     use HasFactory;
 
-    protected $table = 'recovery_vouchers';
+    protected $table = 'market_vouchers';
 
     protected $fillable = [
-        'voucher_date', 
+        'voucher_date',
         'customerArea',
         'customerCode',
         'description',
@@ -21,25 +21,29 @@ class RecoveryVoucher extends Model
         'misc',
         'preBalance',
         'lastBalance',
-        'customer_ledgers_id',
+        'market_vouchers_id',
     ];
 
     protected $casts = [
         'voucher_date' => 'date',
     ];
-     public $timestamps = false;
 
+    public $timestamps = false;
 
     protected static function boot()
     {
         parent::boot();
         static::saving(function ($model) {
             // Proper case for description
-            if (!empty($model->description)) {
+            if (! empty($model->description)) {
                 $model->description = ucwords(strtolower($model->description));
             }
-        });     
-        
+        });
+
     }
 
+    public function customer()
+    {
+        return $this->belongsTo(NewCustomer::class, 'customerCode', 'custCode');
+    }
 }

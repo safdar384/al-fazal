@@ -14,6 +14,22 @@ class StoreCustomerRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'custCode' => $this->filled('custCode')
+                ? strtoupper(trim((string) $this->input('custCode')))
+                : null,
+            'custArea' => strtoupper(trim((string) $this->input('custArea', ''))),
+            'bussnessName' => ucwords(strtolower(trim((string) $this->input('bussnessName', '')))),
+            'custName' => ucwords(strtolower(trim((string) $this->input('custName', '')))),
+            'custAddress' => ucwords(strtolower(trim((string) $this->input('custAddress', '')))),
+            'custCity' => ucwords(strtolower(trim((string) $this->input('custCity', '')))),
+            'custPage' => ucwords(strtolower(trim((string) $this->input('custPage', '')))),
+            'custContect' => trim((string) $this->input('custContect', '')),
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -95,7 +111,7 @@ class StoreCustomerRequest extends FormRequest
             'custCatagory' => [
                 'required',
                 'string',
-                'max:100'
+                'in:'.implode(',', \App\Models\NewCustomer::CATEGORIES),
             ],
         ];
     }
@@ -128,6 +144,7 @@ class StoreCustomerRequest extends FormRequest
             'custOppDate.required' => 'Opening date is required.',
             'custOppDate.date' => 'Opening date must be a valid date.',
             'custCatagory.required' => 'Category is required.',
+            'custCatagory.in' => 'Category must be Retailers, WholeSale, Raw Material Supplier, Product Supplier, or Transport.',
         ];
     }
 
