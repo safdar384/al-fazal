@@ -3,15 +3,15 @@
 @endphp
 
 <div class="table-responsive">
-    <table class="table table-hover table-striped align-middle mb-0 erp-dash-activity-table">
-        <thead class="table-light">
+    <table class="table table-hover align-middle mb-0 erp-dash-activity-table">
+        <thead style="background: linear-gradient(180deg, #f8fbff, #eef6ff);">
             <tr>
-                <th>Type</th>
+                <th class="ps-3">Type</th>
                 <th>Reference</th>
                 <th class="d-none d-md-table-cell">Party</th>
                 <th class="text-end">Amount</th>
                 <th class="d-none d-sm-table-cell">Status</th>
-                <th>Date</th>
+                <th class="pe-3">Date</th>
             </tr>
         </thead>
         <tbody>

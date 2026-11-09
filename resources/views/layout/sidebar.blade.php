@@ -1,8 +1,8 @@
 <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
     <div class="sidebar-brand">
         <a href="{{ url('/dashboard') }}" class="brand-link">
-            <i class="bi bi-shop-window fs-4 text-primary"></i>
-            <span class="brand-text fw-bold ms-2">TradeGate</span>
+            <img src="{{ asset('favicon.png') }}" alt="Al Fazal" class="brand-image opacity-100 shadow-sm" width="32" height="32">
+            <span class="brand-text fw-bold ms-2">Al Fazal</span>
         </a>
     </div>
 

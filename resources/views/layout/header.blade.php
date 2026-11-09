@@ -47,6 +47,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
 
     <!--begin::Page Specific Styles-->
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
+    
     @stack('styles')
 
     <style>
@@ -93,6 +95,13 @@
         .sidebar-brand {
             background: linear-gradient(135deg, #12315a 0%, #1f4b87 100%);
             border-bottom: 1px solid rgba(255,255,255,0.12);
+        }
+        .sidebar-brand .brand-image {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            border-radius: 6px;
+            flex-shrink: 0;
         }
         .sidebar-brand .brand-link {
             color: white !important;
