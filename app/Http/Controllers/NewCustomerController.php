@@ -36,7 +36,7 @@ class NewCustomerController extends Controller
         $portfolio = PartyBalance::portfolioTotals();
         $portfolio['net_balance'] = round($portfolio['total_payable'] - $portfolio['total_receivable'], 2);
 
-        return view('pages.Setup.Customer', compact('customers', 'portfolio'));
+        return view('Pages.Setup.customer', compact('customers', 'portfolio'));
     }
 
     /**
@@ -58,7 +58,7 @@ class NewCustomerController extends Controller
             ->orderBy('labourName', 'asc')
             ->get(['labourCode', 'labourName']);
 
-        return view('pages.Setup.NewCustomer', compact('custAreas', 'custCatagories', 'usedAreaCodes', 'agentLabours'));
+        return view('Pages.Setup.newCustomer', compact('custAreas', 'custCatagories', 'usedAreaCodes', 'agentLabours'));
     }
 
     /**
@@ -107,7 +107,7 @@ class NewCustomerController extends Controller
     {
         $customer = NewCustomer::findOrFail($id);
 
-        return view('pages.Setup.showCustomer', compact('customer'));
+        return view('Pages.Setup.showCustomer', compact('customer'));
     }
 
     /**
@@ -120,7 +120,7 @@ class NewCustomerController extends Controller
         $custCatagories = NewCustomer::CATEGORIES;
         $codeLocked = $this->customerHasTransactionalData((string) $customer->custCode);
 
-        return view('pages.Setup.editCustomer', compact('customer', 'custAreas', 'custCatagories', 'codeLocked'));
+        return view('Pages.Setup.editCustomer', compact('customer', 'custAreas', 'custCatagories', 'codeLocked'));
     }
 
     /**

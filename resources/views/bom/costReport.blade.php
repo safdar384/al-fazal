@@ -132,7 +132,7 @@
   <div class="app-content">
     <div class="container-fluid px-2 px-md-3" style="max-width: var(--erp-content-max, 1100px); margin: 0 auto;">
 
-      @include('Components.invoiceHeader')
+      @include('components.invoiceHeader')
 
       <div class="cost-report-product-box mb-3">
         <div class="row g-2 align-items-center">

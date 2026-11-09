@@ -19,7 +19,7 @@ class BankAccountController extends Controller
             return $bank;
         });
 
-        return view('pages.Setup.bankAccount', compact('bankAC'));
+        return view('Pages.Setup.bankAccount', compact('bankAC'));
     }
 
     public function listAccounts(): JsonResponse

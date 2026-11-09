@@ -19,7 +19,7 @@ class PackSizeController extends Controller
             ->orderBy('qty')
             ->get();
 
-        return view('pages.Setup.packSize', [
+        return view('Pages.Setup.packSize', [
             'packSizes' => $packSizes,
             'packings' => PackSize::PACKINGS,
             'units' => PackSize::UNITS,

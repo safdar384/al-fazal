@@ -39,7 +39,7 @@ class StockManagementController extends Controller
             ->unique()
             ->values();
 
-        return view('pages.stockManagement.stockManagement', [
+        return view('Pages.stockManagement.stockManagement', [
             'workStocks' => $workStocks,
             'productStocks' => $productStocks,
             'products' => $products,

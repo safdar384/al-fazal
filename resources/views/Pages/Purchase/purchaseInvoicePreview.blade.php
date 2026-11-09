@@ -465,7 +465,7 @@
 <body>
     <div class="invoice-container">
         <!-- Include Professional Company Header Component -->
-        @include('Components.invoiceHeader')
+        @include('components.invoiceHeader')
         
         <!-- Invoice Type Badge -->
         <div class="invoice-type-badge">📦 PURCHASE INVOICE</div>

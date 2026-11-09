@@ -19,7 +19,7 @@ class ExpenseController extends Controller
         $expenses = Expense::where('status', 'Active')->orderBy('expenseName', 'asc')->get();
         $banks = BankAccount::orderBy('bankName', 'asc')->get();
 
-        return view('pages.expense.expenseTransaction', compact('expenses', 'banks'));
+        return view('Pages.expense.expenseTransaction', compact('expenses', 'banks'));
     }
 
     /**
@@ -321,7 +321,7 @@ class ExpenseController extends Controller
         $expenses = Expense::where('status', 'Active')->orderBy('expenseName', 'asc')->get();
         $banks = BankAccount::orderBy('bankName', 'asc')->get();
 
-        return view('pages.expense.expenseLedger', compact('expenses', 'banks'));
+        return view('Pages.expense.expenseLedger', compact('expenses', 'banks'));
     }
 
     /**
@@ -329,7 +329,7 @@ class ExpenseController extends Controller
      */
     public function expenseReportPrintPage()
     {
-        return view('pages.expense.expenseReportPrint');
+        return view('Pages.expense.expenseReportPrint');
     }
 
     /**

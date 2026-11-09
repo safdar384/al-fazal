@@ -18,7 +18,7 @@ class CustomerChequeController extends Controller
 {
     public function index(): View
     {
-        return view('pages.customerAccount.partyCheques', [
+        return view('Pages.customerAccount.partyCheques', [
             'workers' => $this->workersList(),
             'bankAccounts' => BankAccount::query()
                 ->orderBy('bankName')
@@ -32,7 +32,7 @@ class CustomerChequeController extends Controller
 
     public function inProcess(): View
     {
-        return view('pages.customerAccount.chequesInProcess', [
+        return view('Pages.customerAccount.chequesInProcess', [
             'workers' => $this->workersList(),
             'bankAccounts' => BankAccount::query()
                 ->orderBy('bankName')

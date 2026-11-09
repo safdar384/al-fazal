@@ -5,8 +5,8 @@ namespace Database\Seeders;
 use App\Models\Catagory;
 use App\Models\Colour;
 use App\Models\newProduct;
-use App\Models\packing;
-use App\Models\productCompany;
+use App\Models\Packing;
+use App\Models\ProductCompany;
 use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
 
@@ -23,7 +23,7 @@ class ProductSeeder extends Seeder
         $this->command->info('🏢 Seeding Companies...');
         $companies = ['Samsung', 'LG', 'Sony', 'Panasonic', 'Haier', 'Dawlance', 'Orient', 'PEL', 'Canon', 'HP', 'Dell', 'Lenovo', 'Toshiba', 'Philips', 'Bosch'];
         foreach ($companies as $companyName) {
-            productCompany::firstOrCreate(['companyName' => $companyName]);
+            ProductCompany::firstOrCreate(['companyName' => $companyName]);
         }
         $this->command->info('   ✓ '.count($companies).' companies created');
 
@@ -31,7 +31,7 @@ class ProductSeeder extends Seeder
         $colours = Colour::pluck('colourName')->toArray();
 
         // Skip Packings (already seeded by PackingSeeder)
-        $packings = packing::pluck('pakingName')->toArray();
+        $packings = Packing::pluck('pakingName')->toArray();
 
         // Seed Categories (skip if already exist)
         $this->command->info('🏷️  Seeding Categories...');

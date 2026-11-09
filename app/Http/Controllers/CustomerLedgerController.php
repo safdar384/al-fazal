@@ -29,7 +29,7 @@ class CustomerLedgerController extends Controller
 
         $initialAccountTransactions = $this->buildAccountTransactionList(null);
 
-        return view('pages.customerAccount.custLedgerTransaction', [
+        return view('Pages.customerAccount.custLedgerTransaction', [
             'customers' => $customers,
             'bankAccounts' => $bankAccounts,
             'initialAccountTransactions' => $initialAccountTransactions,
@@ -128,7 +128,7 @@ class CustomerLedgerController extends Controller
             ->orderBy('custName', 'asc')
             ->get(['custCode', 'custName', 'bussnessName', 'custArea', 'custCity']);
 
-        return view('pages.customerAccount.viewCustLedger', compact('customers'));
+        return view('Pages.customerAccount.viewCustLedger', compact('customers'));
     }
 
 
@@ -347,7 +347,7 @@ class CustomerLedgerController extends Controller
 
         $balance = $isPayable ? (float) (-$running) : (float) $running;
 
-        return view('pages.customerAccount.ledgerPreview', compact('customer', 'entries', 'balance', 'periodText'));
+        return view('Pages.customerAccount.ledgerPreview', compact('customer', 'entries', 'balance', 'periodText'));
     }
 
     // Fetch single ledger entry details

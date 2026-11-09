@@ -7,8 +7,8 @@ use App\Http\Requests\UpdateProductRequest;
 use App\Models\Catagory;
 use App\Models\Colour;
 use App\Models\newProduct;
-use App\Models\packing;
-use App\Models\productCompany;
+use App\Models\Packing;
+use App\Models\ProductCompany;
 use App\Models\ProductVariant;
 use App\Models\UnitPerPack;
 use App\Support\ProductImageStorage;
@@ -28,7 +28,7 @@ class newProductController extends Controller
     {
         $products = newProduct::orderBy('productName', 'asc')->get();
 
-        return view('pages.Setup.product', compact('products'));
+        return view('Pages.Setup.product', compact('products'));
     }
 
     /**
@@ -38,12 +38,12 @@ class newProductController extends Controller
     {
         $colours = Colour::orderBy('id', 'asc')->get();
         $catagorys = Catagory::orderBy('id', 'asc')->get();
-        $proCompanys = productCompany::orderBy('id', 'asc')->get();
-        $packings = packing::orderBy('pakingName', 'asc')->get();
+        $proCompanys = ProductCompany::orderBy('id', 'asc')->get();
+        $packings = Packing::orderBy('pakingName', 'asc')->get();
         $unitPerPacks = UnitPerPack::orderBy('unitName', 'asc')->get();
         $lookupUsage = $this->lookupUsage();
 
-        return view('pages.Setup.newProduct', array_merge(
+        return view('Pages.Setup.newProduct', array_merge(
             compact('colours', 'catagorys', 'proCompanys', 'packings', 'unitPerPacks'),
             $lookupUsage
         ));
@@ -156,13 +156,13 @@ class newProductController extends Controller
     {
         $colours = Colour::orderBy('id', 'asc')->get();
         $catagorys = Catagory::orderBy('id', 'asc')->get();
-        $proCompanys = productCompany::orderBy('id', 'asc')->get();
-        $packings = packing::orderBy('id', 'asc')->get();
+        $proCompanys = ProductCompany::orderBy('id', 'asc')->get();
+        $packings = Packing::orderBy('id', 'asc')->get();
         $unitPerPacks = UnitPerPack::orderBy('unitName', 'asc')->get();
         $product = newProduct::with('variants')->findOrFail($id);
         $lookupUsage = $this->lookupUsage();
 
-        return view('pages.Setup.editProduct', array_merge(
+        return view('Pages.Setup.editProduct', array_merge(
             compact('product', 'colours', 'catagorys', 'proCompanys', 'packings', 'unitPerPacks'),
             $lookupUsage
         ));

@@ -156,7 +156,7 @@
     @endphp
     <div class="status-watermark {{ $watermarkClass }}">{{ $statusText }}</div>
 
-    @include('Components.invoiceHeader')
+    @include('components.invoiceHeader')
     <div class="top">
         <div>
             <div class="title">Customer Order</div>

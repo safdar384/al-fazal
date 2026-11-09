@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\productCompany;
+use App\Models\ProductCompany;
 use App\Support\ProductLookupUsage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -19,7 +19,7 @@ class CompanyController extends Controller
             'companyName' => 'required|unique:product_company|max:255',
         ]);
 
-        $company = productCompany::create($validated);
+        $company = ProductCompany::create($validated);
 
         if ($request->ajax() || $request->expectsJson() || $request->wantsJson()) {
             return response()->json(['success' => true, 'data' => $company], 201);
@@ -34,7 +34,7 @@ class CompanyController extends Controller
     public function destroy(Request $request, string $id): JsonResponse|RedirectResponse
     {
         try {
-            $company = productCompany::findOrFail($id);
+            $company = ProductCompany::findOrFail($id);
 
             if (ProductLookupUsage::isUsed('companyName', $company->companyName)) {
                 $message = "Cannot delete \"{$company->companyName}\" because it is used by one or more products.";

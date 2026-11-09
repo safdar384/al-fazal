@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\packing;
+use App\Models\Packing;
 use App\Support\ProductLookupUsage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -43,7 +43,7 @@ class PackingController extends Controller
         $unit = strtoupper(trim($validated['baseUnit']));
         $qty = (int) $validated['qtyInPack'];
 
-        $exists = packing::query()
+        $exists = Packing::query()
             ->where('pakingName', $name)
             ->where('baseUnit', $unit)
             ->where('qtyInPack', $qty)
@@ -59,7 +59,7 @@ class PackingController extends Controller
             return redirect()->back()->withInput()->with('error', $message);
         }
 
-        $packing = packing::create([
+        $packing = Packing::create([
             'pakingName' => $name,
             'baseUnit' => $unit,
             'qtyInPack' => $qty,
@@ -81,7 +81,7 @@ class PackingController extends Controller
     public function destroy(Request $request, string $id): JsonResponse|RedirectResponse
     {
         try {
-            $packing = packing::findOrFail($id);
+            $packing = Packing::findOrFail($id);
 
             if (ProductLookupUsage::isUsed('pakingName', $packing->pakingName)) {
                 $message = "Cannot delete \"{$packing->pakingName}\" because it is used by one or more products.";

@@ -49,7 +49,7 @@ class FittingLabourController extends Controller
             'rate' => (float) $w->rate,
         ])->values();
 
-        return view('pages.fittingLabour.fittingLabour', [
+        return view('Pages.fittingLabour.fittingLabour', [
             'fitters' => FittingModuleCache::fitters(),
             'products' => $catalog['products'],
             'productVariants' => $catalog['productVariants'],

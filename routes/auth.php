@@ -1,9 +1,10 @@
 <?php
 
+use App\Http\Controllers\Auth\ConfirmPasswordController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\Auth\VerificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -18,14 +19,17 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('email/verify', [VerifyEmailController::class, 'show'])->name('verification.notice');
-    Route::get('email/verify/{id}/{hash}', [VerifyEmailController::class, 'verify'])
+    // Laravel UI VerificationController (show / verify / resend)
+    Route::get('email/verify', [VerificationController::class, 'show'])->name('verification.notice');
+    Route::get('email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
         ->middleware(['signed', 'throttle:6,1'])
         ->name('verification.verify');
-
-    Route::post('email/verification-notification', [VerifyEmailController::class, 'send'])
+    Route::post('email/verification-notification', [VerificationController::class, 'resend'])
         ->middleware('throttle:6,1')
-        ->name('verification.send');
+        ->name('verification.resend');
+
+    Route::get('password/confirm', [ConfirmPasswordController::class, 'showConfirmForm'])->name('password.confirm');
+    Route::post('password/confirm', [ConfirmPasswordController::class, 'confirm'])->name('password.confirm.submit');
 
     Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 });

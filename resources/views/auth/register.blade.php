@@ -63,7 +63,7 @@
         <h1>Create account</h1>
         <p class="lead">Register for {{ config('app.name', 'TradeGate') }}</p>
 
-        <form method="POST" action="{{ route('register') }}">
+        <form method="POST" action="{{ Route::has('register') ? route('register') : url('/register') }}">
             @csrf
 
             <div class="mb-3">

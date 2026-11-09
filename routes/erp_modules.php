@@ -30,6 +30,7 @@ use App\Http\Controllers\newProductController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderReportController;
 use App\Http\Controllers\PackingController;
+use App\Http\Controllers\PackSizeController;
 use App\Http\Controllers\ProductReportController;
 use App\Http\Controllers\ProfitLossReportController;
 use App\Http\Controllers\ProfitReportController;
@@ -114,6 +115,11 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/packing/{id}', [PackingController::class, 'destroy'])->name('packing.destroy');
     Route::post('/unit-per-pack/create', [UnitPerPackController::class, 'store'])->name('unitPerPack.store');
     Route::delete('/unit-per-pack/{id}', [UnitPerPackController::class, 'destroy'])->name('unitPerPack.destroy');
+
+    // Pack sizes (packing × unit × qty catalog)
+    Route::get('/pack-size', [PackSizeController::class, 'index'])->name('packSize.index');
+    Route::post('/pack-size', [PackSizeController::class, 'store'])->name('packSize.store');
+    Route::delete('/pack-size/{id}', [PackSizeController::class, 'destroy'])->name('packSize.destroy');
 
     Route::get('/colours', [ColourController::class, 'index'])->name('colours.index');
     Route::get('/colours/create', [ColourController::class, 'create'])->name('colours.create');

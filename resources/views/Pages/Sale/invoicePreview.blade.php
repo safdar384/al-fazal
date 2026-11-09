@@ -503,7 +503,7 @@
 <body>
     <div class="invoice-container">
         <!-- Include Professional Company Header Component -->
-        @include('Components.invoiceHeader')
+        @include('components.invoiceHeader')
         
         <div class="meta-strip">
             <div class="meta-cell meta-customer">

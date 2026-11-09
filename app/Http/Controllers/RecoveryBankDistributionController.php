@@ -29,7 +29,7 @@ class RecoveryBankDistributionController extends Controller
 
         $areas = CustomerArea::all();
 
-        return view('pages.customerAccount.recoveryBankDistribution', compact('customers', 'areas'));
+        return view('Pages.customerAccount.recoveryBankDistribution', compact('customers', 'areas'));
     }
 
     /**

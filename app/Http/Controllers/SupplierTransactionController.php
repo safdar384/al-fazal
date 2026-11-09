@@ -21,7 +21,7 @@ class SupplierTransactionController extends Controller
     public function index(): View
     {
         // Keep first paint light — full product catalog loads only for Net Rate modal.
-        return view('pages.customerAccount.supplierTransaction', [
+        return view('Pages.customerAccount.supplierTransaction', [
             'customers' => SupplierModuleCache::suppliersForTransactionPage(),
             'bankAccounts' => BankAccount::query()
                 ->orderBy('bankName')
