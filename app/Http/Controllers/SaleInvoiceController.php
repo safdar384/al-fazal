@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\DownloadsDomPdf;
 use App\Models\Guds;
 use App\Models\NewCustomer;
 use App\Models\Order;
@@ -15,6 +16,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SaleInvoiceController extends Controller
 {
+    use DownloadsDomPdf;
+
     public function __construct(
         protected SaleInvoiceService $sales,
         protected SaleReturnService $saleReturns
@@ -170,11 +173,21 @@ class SaleInvoiceController extends Controller
         }
     }
 
-    public function printSummary(Request $request): View
+    public function printSummary(Request $request): View|Response
     {
         $invoices = $request->query('sale_type') === 'return'
             ? $this->saleReturns->listReturnsForPrint($request)
             : $this->sales->listInvoicesForPrint($request);
+
+        if ($request->boolean('download_pdf')) {
+            return $this->downloadDomPdf(
+                'Pages.Sale.saleSummaryPdf',
+                compact('invoices'),
+                'sale-summary-'.now()->format('YmdHis').'.pdf',
+                'a4',
+                'landscape'
+            );
+        }
 
         return view('Pages.Sale.saleSummaryPrint', compact('invoices'));
     }
@@ -203,6 +216,22 @@ class SaleInvoiceController extends Controller
         $customer = NewCustomer::query()->where('custCode', $invoice->customerCode)->first();
 
         return view('Pages.Sale.invoicePreview', compact('invoice', 'customer'));
+    }
+
+    public function pdf(string $invoiceNo): Response
+    {
+        $invoice = SaleInvoice::query()
+            ->with(['items', 'bankPayments.bankAccount'])
+            ->where('invoiceNo', $invoiceNo)
+            ->firstOrFail();
+
+        $customer = NewCustomer::query()->where('custCode', $invoice->customerCode)->first();
+
+        return $this->downloadDomPdf(
+            'Pages.Sale.invoicePreviewPdf',
+            compact('invoice', 'customer'),
+            'sale-invoice-'.$invoiceNo.'.pdf'
+        );
     }
 
     public function storeGuds(Request $request): JsonResponse
@@ -396,6 +425,14 @@ class SaleInvoiceController extends Controller
 
         return $request->validate($rules, [
             'orderNo.required' => 'Select the customer order number.',
+            'customerCode.required' => 'Please select a customer.',
+            'customerName.required' => 'Please select a customer.',
+            'items.required' => 'Add at least one product before saving.',
+            'items.min' => 'Add at least one product before saving.',
+            'items.*.productCode.required' => 'Each line must have a product.',
+            'items.*.qty.required' => 'Quantity is required for each product.',
+            'items.*.qty.min' => 'Quantity must be at least 1.',
+            'noOfItems.min' => 'Add at least one product before saving.',
         ]);
     }
 }

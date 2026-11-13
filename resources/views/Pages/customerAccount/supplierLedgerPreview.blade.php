@@ -250,7 +250,7 @@
         .summary-item.credit h6 { color: #198754; }
         .summary-item.debit h6 { color: #dc3545; }
         .summary-item.balance h6 { color: #0f2747; }
-        .btn-print, .btn-back {
+        .btn-print, .btn-back, .btn-pdf {
             position: fixed;
             bottom: 24px;
             padding: 9px 18px;
@@ -260,6 +260,7 @@
             border-radius: 4px;
         }
         .btn-back { left: 24px; }
+        .btn-pdf { right: 140px; }
         .btn-print { right: 24px; background: #0f2747; border-color: #0f2747; }
         .btn-print:hover { background: #1a4a8a; border-color: #1a4a8a; }
     </style>
@@ -380,6 +381,9 @@
     <button class="btn btn-secondary btn-back no-print" type="button" onclick="window.close()">
         <i class="bi bi-arrow-left"></i> Back
     </button>
+    <a href="{{ request()->fullUrlWithQuery(['download_pdf' => 1]) }}" class="btn btn-danger btn-pdf no-print">
+        <i class="bi bi-file-earmark-pdf"></i> PDF
+    </a>
     <button class="btn btn-primary btn-print no-print" type="button" onclick="window.print()">
         <i class="bi bi-printer"></i> Print
     </button>

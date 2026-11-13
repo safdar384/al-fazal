@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\DownloadsDomPdf;
 use App\Models\BankAccount;
 use App\Models\FittingLabour;
 use App\Models\Labour;
@@ -14,9 +15,12 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use stdClass;
+use Symfony\Component\HttpFoundation\Response;
 
 class LabourAccountController extends Controller
 {
+    use DownloadsDomPdf;
+
     public const BANK_LEDGER_CATEGORY = 'LabourAccountTransaction';
 
     public function index(): View
@@ -484,7 +488,7 @@ class LabourAccountController extends Controller
         ]);
     }
 
-    public function previewLabourLedger(Request $request, string $labourCode): View
+    public function previewLabourLedger(Request $request, string $labourCode): View|Response
     {
         $labour = Labour::where('labourCode', $labourCode)->first();
         if (! $labour) {
@@ -517,13 +521,19 @@ class LabourAccountController extends Controller
         $balance = $built['balance'];
         $category = $built['category'];
 
-        return view('Pages.labourAccount.labourLedgerPreview', compact(
-            'labour',
-            'entries',
-            'balance',
-            'periodText',
-            'category'
-        ));
+        $viewData = compact('labour', 'entries', 'balance', 'periodText', 'category');
+
+        if ($request->boolean('download_pdf')) {
+            return $this->downloadDomPdf(
+                'Pages.labourAccount.labourLedgerPreviewPdf',
+                $viewData,
+                'labour-ledger-'.$labourCode.'-'.now()->format('YmdHis').'.pdf',
+                'a4',
+                'landscape'
+            );
+        }
+
+        return view('Pages.labourAccount.labourLedgerPreview', $viewData);
     }
 
     /**

@@ -92,8 +92,9 @@
 
   @media print {
     .app-sidebar, .app-header, .app-content-header .breadcrumb, .btn, button, .no-print, .psr-nav-tabs { display: none !important; }
-    body, .app-main { margin: 0; padding: 0; }
+    body, .app-main { margin: 0; padding: 0; color: #000 !important; }
     .card { box-shadow: none !important; border: none !important; }
+    .app-main, .app-main * { color: #000 !important; text-shadow: none !important; }
   }
 </style>
 

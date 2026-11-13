@@ -114,9 +114,14 @@
       <div class="card shadow-sm border-0 mb-3">
         <div class="card-header chq-head py-2 d-flex flex-wrap align-items-center justify-content-between gap-2">
           <strong class="mb-0"><i class="bi bi-table me-2"></i>Worker Cheques</strong>
-          <button type="button" class="btn btn-sm btn-outline-light fw-semibold" id="btnPrintInProcess" title="Print cheque in process report">
-            <i class="bi bi-printer me-1"></i>Print Report
-          </button>
+          <div class="d-flex flex-wrap gap-2">
+            <button type="button" class="btn btn-sm btn-outline-light fw-semibold" id="btnPrintInProcess" title="Print cheque in process report">
+              <i class="bi bi-printer me-1"></i>Print Report
+            </button>
+            <button type="button" class="btn btn-sm btn-danger fw-semibold" id="btnPdfInProcess" title="Download cheque in process PDF">
+              <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+            </button>
+          </div>
         </div>
         <div class="card-body border-bottom py-2">
           <div class="row g-2 align-items-end">
@@ -326,7 +331,7 @@ $(function () {
     payModal = new bootstrap.Modal(document.getElementById('chequePayModal'));
   }
 
-  $('#btnPrintInProcess').on('click', function () {
+  function inProcessReportParams(downloadPdf) {
     const params = new URLSearchParams();
     const q = ($('#procSearch').val() || '').trim();
     const workerId = $('#procWorker').val() || '';
@@ -336,10 +341,23 @@ $(function () {
     if (workerId) params.set('worker_id', workerId);
     if (fromDate) params.set('from_date', fromDate);
     if (toDate) params.set('to_date', toDate);
-    const qs = params.toString();
+    if (downloadPdf) params.set('download_pdf', '1');
+    return params;
+  }
+
+  $('#btnPrintInProcess').on('click', function () {
+    const qs = inProcessReportParams(false).toString();
     const w = window.open(printUrl + (qs ? ('?' + qs) : ''), '_blank');
     if (!w) {
       Swal.fire({ icon: 'warning', title: 'Popup blocked', text: 'Please allow popups to print.' });
+    }
+  });
+
+  $('#btnPdfInProcess').on('click', function () {
+    const qs = inProcessReportParams(true).toString();
+    const w = window.open(printUrl + (qs ? ('?' + qs) : ''), '_blank');
+    if (!w) {
+      Swal.fire({ icon: 'warning', title: 'Popup blocked', text: 'Please allow popups to download PDF.' });
     }
   });
 

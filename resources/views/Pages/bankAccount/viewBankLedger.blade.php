@@ -125,6 +125,9 @@
                             <button type="button" class="btn btn-secondary btn-sm" id="btnPrint">
                 <i class="bi bi-printer me-1"></i>Print
               </button>
+                            <button type="button" class="btn btn-danger btn-sm" id="btnPdf">
+                <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+              </button>
                             <a href="{{ route('bank.account.transaction') }}" class="btn btn-outline-primary btn-sm">
                                 <i class="bi bi-arrow-left-right me-1"></i>Transaction
                             </a>
@@ -332,8 +335,7 @@ $(function () {
       if ($('#bankLedgerCode').val()) loadLedger();
     });
 
-    $('#btnPrint').on('click', function (e) {
-      e.preventDefault();
+    function bankLedgerPreviewUrl(downloadPdf) {
       const code = $('#bankLedgerCode').val();
       if (!code) {
         if (typeof showToastError === 'function') {
@@ -341,13 +343,24 @@ $(function () {
         } else {
           alert('Please select a bank first');
         }
-        return;
+        return null;
       }
       const from = $('#fromDate').val();
       const to = $('#toDate').val();
-      const qs = $.param({ from, to });
-      const url = `{{ url('/bank-ledger/preview') }}/${encodeURIComponent(code)}?${qs}`;
-      window.open(url, '_blank');
+      const qs = $.param({ from, to, ...(downloadPdf ? { download_pdf: 1 } : {}) });
+      return `{{ url('/bank-ledger/preview') }}/${encodeURIComponent(code)}?${qs}`;
+    }
+
+    $('#btnPrint').on('click', function (e) {
+      e.preventDefault();
+      const url = bankLedgerPreviewUrl(false);
+      if (url) window.open(url, '_blank');
+    });
+
+    $('#btnPdf').on('click', function (e) {
+      e.preventDefault();
+      const url = bankLedgerPreviewUrl(true);
+      if (url) window.open(url, '_blank');
     });
   });
 </script>

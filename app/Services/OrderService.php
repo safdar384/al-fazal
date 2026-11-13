@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\CustomerArea;
 use App\Models\Guds;
 use App\Models\NewCustomer;
 use App\Models\newProduct;
@@ -33,16 +34,134 @@ class OrderService
     }
 
     /**
-     * @return array{customers: Collection, products: Collection, guds: Collection, nextOrderNo: string}
+     * @return array{
+     *   customers: Collection,
+     *   products: Collection,
+     *   guds: Collection,
+     *   nextOrderNo: string,
+     *   statuses: array<int, string>,
+     *   custAreas: Collection,
+     *   custCategories: array<int, string>,
+     *   productCategories: Collection
+     * }
      */
     public function formData(): array
     {
+        $products = newProduct::query()->with('variants')->orderBy('productName')->get();
+
         return [
             'customers' => NewCustomer::query()->excludeProductSupplier()->orderBy('custName')->get(),
-            'products' => newProduct::query()->with('variants')->orderBy('productName')->get(),
+            'products' => $products,
             'guds' => Guds::query()->where('status', 'active')->orderBy('gudsName')->get(),
             'nextOrderNo' => $this->nextOrderNumber(),
             'statuses' => config('orders.statuses', []),
+            'custAreas' => CustomerArea::query()->orderBy('areaName')->get(),
+            'custCategories' => array_values(array_filter(
+                NewCustomer::CATEGORIES,
+                fn ($cat) => ! NewCustomer::isProductSupplierCategory($cat)
+            )),
+            'productCategories' => $products
+                ->pluck('catagoryName')
+                ->filter(fn ($c) => filled($c))
+                ->unique()
+                ->sort()
+                ->values(),
+        ];
+    }
+
+    /**
+     * @return Collection<int, array<string, mixed>>
+     */
+    public function searchCustomers(string $term, int $limit = 30): Collection
+    {
+        $term = trim($term);
+        $query = NewCustomer::query()->excludeProductSupplier()->orderBy('custName');
+
+        if ($term !== '') {
+            $like = '%'.$term.'%';
+            $query->where(function ($q) use ($like) {
+                $q->where('custCode', 'like', $like)
+                    ->orWhere('custName', 'like', $like)
+                    ->orWhere('bussnessName', 'like', $like)
+                    ->orWhere('custCity', 'like', $like)
+                    ->orWhere('custContect', 'like', $like)
+                    ->orWhere('custArea', 'like', $like);
+            });
+        }
+
+        return $query->limit($limit)->get()->map(fn (NewCustomer $c) => $this->customerOption($c));
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function customerOption(NewCustomer $c): array
+    {
+        $biz = trim((string) ($c->bussnessName ?: $c->custName));
+        $city = trim((string) ($c->custCity ?? ''));
+
+        return [
+            'id' => $c->custCode,
+            'code' => $c->custCode,
+            'name' => $c->custName,
+            'business' => $c->bussnessName ?? '',
+            'city' => $city,
+            'phone' => $c->custContect ?? '',
+            'address' => $c->custAddress ?? '',
+            'area' => $c->custArea ?? '',
+            'discount' => (float) ($c->custdiscount ?? 0),
+            'text' => $city !== '' ? $biz.' — '.$city : $biz,
+            'label' => $city !== '' ? $biz.' — '.$city : $biz,
+        ];
+    }
+
+    /**
+     * @return Collection<int, array<string, mixed>>
+     */
+    public function searchProducts(string $term, ?string $category = null, int $limit = 40): Collection
+    {
+        $term = trim($term);
+        $category = trim((string) $category);
+        $query = newProduct::query()->with('variants')->orderBy('productName');
+
+        if ($category !== '') {
+            $query->where('catagoryName', $category);
+        }
+
+        if ($term !== '') {
+            $like = '%'.$term.'%';
+            $query->where(function ($q) use ($like) {
+                $q->where('productCode', 'like', $like)
+                    ->orWhere('productName', 'like', $like)
+                    ->orWhere('companyName', 'like', $like);
+            });
+        }
+
+        return $query->limit($limit)->get()->map(fn (newProduct $p) => $this->productOption($p));
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function productOption(newProduct $p): array
+    {
+        $stock = (float) ($p->stockQty ?? 0);
+        if ($p->relationLoaded('variants') && $p->variants->count() > 0) {
+            $stock = (float) $p->variants->sum('stockQty');
+        }
+
+        return [
+            'code' => $p->productCode,
+            'name' => $p->productName,
+            'company' => $p->companyName ?? '',
+            'category' => $p->catagoryName ?? '',
+            'packing' => $p->pakingName ?? '',
+            'unit' => $p->unitPerPackName ?? '',
+            'piecesPerUnit' => $p->piecesPerUnit ?? null,
+            'rate' => (float) ($p->saleRate ?? 0),
+            'stockQty' => $stock,
+            'image' => $p->image_url,
+            'hasVariants' => $p->relationLoaded('variants') && $p->variants->count() > 0,
         ];
     }
 

@@ -12,7 +12,6 @@
         .stat-box.warn { background: #fdf0f1; border-color: #f1b0b7; }
         .stat-box .amt-pos { color: #198754; }
         .stat-box .amt-neg { color: #dc3545; }
-        .btn-pdf { display: none; }
     </style>
 </head>
 <body>
@@ -41,6 +40,9 @@
     <button type="button" class="btn btn-secondary btn-back no-print" onclick="window.close()">
         <i class="bi bi-x-lg"></i> Close
     </button>
+    <a id="plStatementPdf" href="{{ route('reports.profit-loss.statement', ['from_date' => $fromDate, 'to_date' => $toDate, 'download_pdf' => 1]) }}" class="btn btn-danger btn-pdf no-print">
+        <i class="bi bi-file-earmark-pdf"></i> PDF
+    </a>
     <button type="button" class="btn btn-primary btn-print no-print" onclick="window.print()">
         <i class="bi bi-printer"></i> Print
     </button>
@@ -51,9 +53,20 @@
         if (!form) return;
         var requestId = 0;
 
+        function syncPdf(params) {
+            var pdfLink = document.getElementById('plStatementPdf');
+            if (!pdfLink) return;
+            var pdfParams = new URLSearchParams(params);
+            pdfParams.delete('fragment');
+            pdfParams.delete('download_pdf');
+            pdfParams.set('download_pdf', '1');
+            pdfLink.href = form.action + '?' + pdfParams.toString();
+        }
+
         function loadFromParams(params) {
             var id = ++requestId;
             params.delete('fragment');
+            params.delete('download_pdf');
             var clean = params.toString();
             var fetchParams = new URLSearchParams(clean);
             fetchParams.set('fragment', '1');
@@ -71,6 +84,7 @@
                 if (!current) return;
                 current.outerHTML = html.trim();
                 history.replaceState(null, '', form.action + (clean ? '?' + clean : ''));
+                syncPdf(new URLSearchParams(clean));
             }).catch(function () {
                 var current = document.getElementById('plStatementLive');
                 if (current) current.classList.remove('is-loading');

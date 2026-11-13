@@ -172,6 +172,9 @@
     <button type="button" class="btn btn-secondary btn-back no-print" onclick="window.close()">
         <i class="bi bi-x-lg"></i> Close
     </button>
+    <a href="{{ request()->fullUrlWithQuery(['download_pdf' => 1]) }}" class="btn btn-danger btn-pdf no-print">
+        <i class="bi bi-file-earmark-pdf"></i> PDF
+    </a>
     <button type="button" onclick="window.print()" class="btn btn-primary btn-print no-print">
         <i class="bi bi-printer"></i> Print Report
     </button>

@@ -63,6 +63,7 @@
                 margin: 0;
                 padding: 0;
                 background: #fff !important;
+                color: #000 !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
@@ -72,10 +73,17 @@
                 box-shadow: none !important;
                 border: none !important;
                 padding: 0 !important;
+                color: #000 !important;
+            }
+            .ledger-container, .ledger-container * {
+                color: #000 !important;
+                text-shadow: none !important;
             }
             .type-pill, .stat-box {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
+                background: #fff !important;
+                color: #000 !important;
             }
             .section-title { break-after: avoid; }
             .ledger-table { font-size: 0.62rem; }
@@ -319,6 +327,9 @@
     <button type="button" class="btn btn-secondary btn-back no-print" onclick="window.close()">
         <i class="bi bi-x-lg"></i> Close
     </button>
+    <a href="{{ route('reports.sales-summary', array_merge(request()->except(['print', 'fragment']), ['download_pdf' => 1])) }}" class="btn btn-danger btn-pdf no-print">
+        <i class="bi bi-file-earmark-pdf"></i> PDF
+    </a>
     <button type="button" onclick="window.print()" class="btn btn-primary btn-print no-print">
         <i class="bi bi-printer"></i> Print Report
     </button>

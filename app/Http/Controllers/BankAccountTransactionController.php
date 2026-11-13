@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\DownloadsDomPdf;
 use App\Models\BankAccount;
 use App\Models\SaleInvoiceBankPayment;
 use App\Support\BankLedgerQuery;
@@ -12,9 +13,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use stdClass;
+use Symfony\Component\HttpFoundation\Response;
 
 class BankAccountTransactionController extends Controller
 {
+    use DownloadsDomPdf;
+
     public const LEDGER_CATEGORY = 'BankAccountTransaction';
 
     public const LOCKED_MESSAGE = 'Only entries created on the Bank Transaction page can be edited or deleted.';
@@ -417,6 +421,18 @@ class BankAccountTransactionController extends Controller
 
         $balance = $running;
 
-        return view('Pages.bankAccount.bankLedgerPreview', compact('bank', 'entries', 'balance', 'periodText'));
+        $viewData = compact('bank', 'entries', 'balance', 'periodText');
+
+        if ($request->boolean('download_pdf')) {
+            return $this->downloadDomPdf(
+                'Pages.bankAccount.bankLedgerPreviewPdf',
+                $viewData,
+                'bank-ledger-'.$bankAccountCode.'-'.now()->format('YmdHis').'.pdf',
+                'a4',
+                'landscape'
+            );
+        }
+
+        return view('Pages.bankAccount.bankLedgerPreview', $viewData);
     }
 }

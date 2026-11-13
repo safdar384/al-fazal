@@ -17,10 +17,31 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class newProductController extends Controller
 {
+    /**
+     * Stream a product/variant image from the public disk (no storage symlink required).
+     */
+    public function media(string $path): StreamedResponse|Response
+    {
+        $path = ProductImageStorage::normalizeRelativePath($path);
+
+        if ($path === '' || ! str_starts_with($path, ProductImageStorage::PRODUCT_DIR.'/')) {
+            abort(404);
+        }
+
+        if (! Storage::disk(ProductImageStorage::DISK)->exists($path)) {
+            abort(404);
+        }
+
+        return Storage::disk(ProductImageStorage::DISK)->response($path);
+    }
+
     /**
      * Display a listing of products.
      */

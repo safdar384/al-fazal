@@ -357,7 +357,7 @@ function bindRow(tr) {
             const stock = parseFloat(p.stockQty) || 0;
             const stockClass = stock <= 0 ? 'bg-danger' : (stock <= 5 ? 'bg-warning text-dark' : 'bg-success');
             const thumb = p.image
-                ? `<img src="${p.image}" alt="" class="product-search-thumb rounded border">`
+                ? `<img src="${p.image}" alt="" class="product-search-thumb rounded border" onerror="this.style.display='none'">`
                 : `<span class="product-search-thumb product-search-thumb-empty rounded border d-inline-flex align-items-center justify-content-center bg-light text-muted"><i class="bi bi-image"></i></span>`;
             return `<div class="dropdown-item-custom d-flex ${idx === 0 ? 'active' : ''}" data-code="${p.code}" data-name="${p.name}" data-rate="${p.rate}">
                 ${thumb}

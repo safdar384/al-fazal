@@ -128,7 +128,10 @@
                                             @if($product->image_url)
                                                 <img src="{{ $product->image_url }}"
                                                      alt="{{ $product->productName }}"
-                                                     class="pm-thumb">
+                                                     class="pm-thumb"
+                                                     loading="lazy"
+                                                     onerror="this.classList.add('d-none'); this.nextElementSibling?.classList.remove('d-none');">
+                                                <span class="pm-thumb pm-thumb-empty d-none"><i class="bi bi-image"></i></span>
                                             @else
                                                 <span class="pm-thumb pm-thumb-empty"><i class="bi bi-image"></i></span>
                                             @endif

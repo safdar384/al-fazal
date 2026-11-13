@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\DownloadsDomPdf;
 use Illuminate\Http\Request;
 use App\Models\BankAccount;
 use App\Models\CustomerCheque;
@@ -11,9 +12,12 @@ use App\Support\PartyBalance;
 use App\Support\PartyLedger;
 use App\Support\SupplierModuleCache;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\Response;
 
 class CustomerLedgerController extends Controller
 {
+    use DownloadsDomPdf;
+
     /**
      * Customer Account Transaction page (Single / Bank / Customer entry).
      */
@@ -347,7 +351,19 @@ class CustomerLedgerController extends Controller
 
         $balance = $isPayable ? (float) (-$running) : (float) $running;
 
-        return view('Pages.customerAccount.ledgerPreview', compact('customer', 'entries', 'balance', 'periodText'));
+        $viewData = compact('customer', 'entries', 'balance', 'periodText');
+
+        if ($request->boolean('download_pdf')) {
+            return $this->downloadDomPdf(
+                'Pages.customerAccount.ledgerPreviewPdf',
+                $viewData,
+                'customer-ledger-'.$customerCode.'-'.now()->format('YmdHis').'.pdf',
+                'a4',
+                'landscape'
+            );
+        }
+
+        return view('Pages.customerAccount.ledgerPreview', $viewData);
     }
 
     // Fetch single ledger entry details

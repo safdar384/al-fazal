@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\DownloadsDomPdf;
 use App\Models\BankAccount;
 use App\Models\CustomerCheque;
 use App\Models\Labour;
@@ -13,9 +14,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\Response;
 
 class CustomerChequeController extends Controller
 {
+    use DownloadsDomPdf;
+
     public function index(): View
     {
         return view('Pages.customerAccount.partyCheques', [
@@ -112,7 +116,7 @@ class CustomerChequeController extends Controller
     /**
      * Print Party Cheque Detail (navy report design, current filters).
      */
-    public function print(Request $request): View
+    public function print(Request $request): View|Response
     {
         $validated = $request->validate([
             'scope' => ['nullable', 'in:today,all,pending,month'],
@@ -138,7 +142,7 @@ class CustomerChequeController extends Controller
             'all' => 'All Cheques',
         ];
 
-        return view('reports.party-cheques.print', [
+        $viewData = [
             'entries' => collect($entries),
             'scope' => $scope,
             'scopeLabel' => $scopeLabels[$scope] ?? 'Party Cheques',
@@ -153,7 +157,19 @@ class CustomerChequeController extends Controller
                 'cleared_count' => $stats['cleared_count'],
                 'cleared_amount' => $stats['cleared_amount'],
             ],
-        ]);
+        ];
+
+        if ($request->boolean('download_pdf')) {
+            return $this->downloadDomPdf(
+                'reports.party-cheques.pdf',
+                $viewData,
+                'party-cheques-'.$scope.'-'.now()->format('YmdHis').'.pdf',
+                'a4',
+                'landscape'
+            );
+        }
+
+        return view('reports.party-cheques.print', $viewData);
     }
 
     /**
@@ -313,7 +329,7 @@ class CustomerChequeController extends Controller
     /**
      * Print Cheque in Process report (navy design, current filters).
      */
-    public function printInProcess(Request $request): View
+    public function printInProcess(Request $request): View|Response
     {
         $validated = $request->validate([
             'q' => ['nullable', 'string', 'max:150'],
@@ -341,17 +357,30 @@ class CustomerChequeController extends Controller
             }
         }
 
-        return view('reports.party-cheques.in-process-print', [
+        $viewData = [
             'entries' => collect($entries),
             'q' => $q,
             'workerLabel' => $workerLabel,
             'fromDate' => $fromDate,
             'toDate' => $toDate,
+            'scopeLabel' => 'Cheques In Process',
             'totals' => [
                 'count' => count($entries),
                 'amount' => $totalAmount,
             ],
-        ]);
+        ];
+
+        if ($request->boolean('download_pdf')) {
+            return $this->downloadDomPdf(
+                'reports.party-cheques.in-process-pdf',
+                $viewData,
+                'cheques-in-process-'.now()->format('YmdHis').'.pdf',
+                'a4',
+                'landscape'
+            );
+        }
+
+        return view('reports.party-cheques.in-process-print', $viewData);
     }
 
     /**

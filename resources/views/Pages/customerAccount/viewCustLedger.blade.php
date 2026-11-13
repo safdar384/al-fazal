@@ -178,6 +178,9 @@
               <button type="button" class="btn btn-secondary btn-sm" id="btnPrint">
                 <i class="bi bi-printer me-1"></i>Print
               </button>
+              <button type="button" class="btn btn-danger btn-sm" id="btnPdf">
+                <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+              </button>
               <a href="{{ route('accountTransaction.index') }}" class="btn btn-outline-primary btn-sm">
                 <i class="bi bi-arrow-left-right me-1"></i>Transaction
               </a>
@@ -596,19 +599,29 @@
       if ($('#customerCode').val()) loadLedger();
     });
 
-    // Print - Open preview in new window
-    $('#btnPrint').on('click', function(e){ 
-      e.preventDefault(); 
+    function customerLedgerPreviewUrl(downloadPdf) {
       const code = $('#customerCode').val();
-      if(!code) {
+      if (!code) {
         showToastError('Error', 'Please select a customer first');
-        return;
+        return null;
       }
       const from = $('#fromDate').val();
       const to = $('#toDate').val();
-      const qs = $.param({ from, to });
-      const url = `{{ url('/customer-ledger/preview') }}/${code}?${qs}`;
-      window.open(url, '_blank');
+      const qs = $.param({ from, to, ...(downloadPdf ? { download_pdf: 1 } : {}) });
+      return `{{ url('/customer-ledger/preview') }}/${encodeURIComponent(code)}?${qs}`;
+    }
+
+    // Print - Open preview in new window
+    $('#btnPrint').on('click', function(e){
+      e.preventDefault();
+      const url = customerLedgerPreviewUrl(false);
+      if (url) window.open(url, '_blank');
+    });
+
+    $('#btnPdf').on('click', function(e){
+      e.preventDefault();
+      const url = customerLedgerPreviewUrl(true);
+      if (url) window.open(url, '_blank');
     });
   });
 </script>

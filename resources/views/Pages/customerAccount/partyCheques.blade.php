@@ -208,6 +208,9 @@
               <button type="button" class="btn btn-sm btn-outline-light fw-semibold" id="btnPrintPartyCheques" title="Print party cheque report">
                 <i class="bi bi-printer me-1"></i>Print Report
               </button>
+              <button type="button" class="btn btn-sm btn-danger fw-semibold" id="btnPdfPartyCheques" title="Download party cheque PDF">
+                <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+              </button>
               <div class="chq-scope-wrap btn-group flex-wrap" role="group" aria-label="Cheque scope">
                 <button type="button" class="btn btn-sm btn-outline-light btn-scope active" data-scope="today" id="btnTodayChq">
                   <i class="bi bi-calendar-day me-1"></i>Today
@@ -477,15 +480,27 @@ $(function () {
     };
   }
 
-  $('#btnPrintPartyCheques').on('click', function () {
+  function partyChequeReportParams(downloadPdf) {
     const dates = dateFilters();
     const params = new URLSearchParams();
     params.set('scope', currentScope || 'today');
     if (dates.from_date) params.set('from_date', dates.from_date);
     if (dates.to_date) params.set('to_date', dates.to_date);
-    const w = window.open(printUrl + '?' + params.toString(), '_blank');
+    if (downloadPdf) params.set('download_pdf', '1');
+    return params;
+  }
+
+  $('#btnPrintPartyCheques').on('click', function () {
+    const w = window.open(printUrl + '?' + partyChequeReportParams(false).toString(), '_blank');
     if (!w) {
       Swal.fire({ icon: 'warning', title: 'Popup blocked', text: 'Please allow popups to print.' });
+    }
+  });
+
+  $('#btnPdfPartyCheques').on('click', function () {
+    const w = window.open(printUrl + '?' + partyChequeReportParams(true).toString(), '_blank');
+    if (!w) {
+      Swal.fire({ icon: 'warning', title: 'Popup blocked', text: 'Please allow popups to download PDF.' });
     }
   });
 

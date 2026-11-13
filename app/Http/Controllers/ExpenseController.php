@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\DownloadsDomPdf;
 use App\Models\BankAccount;
 use App\Models\Expense;
 use App\Models\ExpenseLedger;
 use App\Support\BankLedgerQuery;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\Response;
 
 class ExpenseController extends Controller
 {
+    use DownloadsDomPdf;
+
     /**
      * Show expense transaction page
      */
@@ -327,8 +332,55 @@ class ExpenseController extends Controller
     /**
      * Show expense report print page
      */
-    public function expenseReportPrintPage()
+    public function expenseReportPrintPage(Request $request): View|Response
     {
+        if ($request->boolean('download_pdf')) {
+            $query = ExpenseLedger::query()
+                ->from('expense_ledger')
+                ->leftJoin('expenses', 'expenses.expenseCode', '=', 'expense_ledger.expenseCode')
+                ->select([
+                    'expense_ledger.*',
+                    'expenses.expenseName as expenseName',
+                ]);
+
+            if ($request->filled('expenseCode')) {
+                $query->where('expense_ledger.expenseCode', $request->expenseCode);
+            }
+            if ($request->filled('fromDate')) {
+                $query->whereDate('expense_ledger.entryDate', '>=', $request->fromDate);
+            }
+            if ($request->filled('toDate')) {
+                $query->whereDate('expense_ledger.entryDate', '<=', $request->toDate);
+            }
+            if ($request->filled('category')) {
+                $query->where('expense_ledger.category', $request->category);
+            }
+
+            $rows = $query->orderBy('expense_ledger.entryDate', 'desc')
+                ->orderBy('expense_ledger.id', 'desc')
+                ->get();
+
+            $from = $request->input('fromDate');
+            $to = $request->input('toDate');
+            if ($from && $to) {
+                $periodText = $from.' to '.$to;
+            } elseif ($from) {
+                $periodText = 'From '.$from;
+            } elseif ($to) {
+                $periodText = 'Until '.$to;
+            } else {
+                $periodText = 'All Time';
+            }
+
+            return $this->downloadDomPdf(
+                'Pages.expense.expenseReportPdf',
+                compact('rows', 'periodText'),
+                'expense-report-'.now()->format('YmdHis').'.pdf',
+                'a4',
+                'landscape'
+            );
+        }
+
         return view('Pages.expense.expenseReportPrint');
     }
 

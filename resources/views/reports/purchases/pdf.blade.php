@@ -5,10 +5,10 @@
     <title>{{ $config['title'] }}</title>
     <style>
         @page { size: A4; margin: 9mm 8mm; }
-        body { font-family: DejaVu Sans, sans-serif; color: #1f2937; font-size: 10.5px; line-height: 1.2; }
+        body { font-family: DejaVu Sans, sans-serif; color: #000; font-size: 10.5px; line-height: 1.2; }
         .header { margin-bottom: 8px; border-bottom: 1px solid #d1d5db; padding-bottom: 4px; }
         .title { font-size: 14px; font-weight: 700; margin: 0; }
-        .meta { margin-top: 2px; font-size: 10px; color: #4b5563; }
+        .meta { margin-top: 2px; font-size: 10px; color: #000; }
         .filters { margin: 6px 0 8px; font-size: 10px; }
         .filters span { display: inline-block; margin-right: 8px; }
         table { width: 100%; border-collapse: collapse; margin-top: 4px; }

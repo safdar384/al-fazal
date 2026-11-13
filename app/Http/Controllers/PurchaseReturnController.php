@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\DownloadsDomPdf;
 use App\Models\NewCustomer;
 use App\Models\PurchaseReturn;
 use App\Services\PurchaseInvoiceService;
@@ -9,9 +10,12 @@ use App\Services\PurchaseReturnService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\Response;
 
 class PurchaseReturnController extends Controller
 {
+    use DownloadsDomPdf;
+
     public function __construct(
         protected PurchaseReturnService $returns,
         protected PurchaseInvoiceService $purchases

@@ -143,6 +143,9 @@
               <small class="text-white-50">Select rows, then Mark Delivered once</small>
             </div>
             <div class="d-flex flex-wrap align-items-center gap-2">
+              <button type="button" class="btn btn-sm btn-danger fw-semibold" id="btnPdfBiltyGuds" title="Download PDF">
+                <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+              </button>
               <button type="button" class="btn btn-sm btn-outline-light fw-semibold" id="btnPrintBiltyGuds" title="Print report">
                 <i class="bi bi-printer me-1"></i>Print Report
               </button>
@@ -403,6 +406,11 @@ $(function () {
   });
 
   $('.btn-scope').on('click', function () {
+  $('#btnPdfBiltyGuds').on('click', function () {
+    const params = new URLSearchParams(filters());
+    window.location.href = pdfUrl + '?' + params.toString();
+  });
+
     setScope($(this).data('scope'));
   });
 

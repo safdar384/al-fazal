@@ -5,17 +5,29 @@
         .no-print { display: none !important; }
         html, body {
             width: 297mm; margin: 0; padding: 0; background: #fff !important;
+            color: #000 !important;
             -webkit-print-color-adjust: exact; print-color-adjust: exact;
         }
         .ledger-container {
             box-shadow: none !important; border: none !important; border-radius: 0 !important;
             margin: 0; padding: 0; max-width: 100%;
+            color: #000 !important;
         }
-        .ledger-table thead th { background: #0f2747 !important; color: #fff !important; }
-        .ledger-table tbody tr:nth-child(even) td { background: #f4f7fb !important; }
+        .ledger-container, .ledger-container * {
+            color: #000 !important;
+            text-shadow: none !important;
+        }
+        .ledger-table thead th { background: #fff !important; color: #000 !important; border-bottom: 2pt solid #000 !important; }
+        .ledger-table tbody tr:nth-child(even) td { background: #fff !important; }
+        .pl-row.net { background: #fff !important; color: #000 !important; border-top: 2pt solid #000 !important; border-bottom: 2.5pt double #000 !important; }
+        .pl-row.net .hint { color: #000 !important; }
         .meta-bar, .summary-stats, .stat-box, .filter-card, .pl-row {
             -webkit-print-color-adjust: exact; print-color-adjust: exact;
+            color: #000 !important;
+            background: #fff !important;
+            border-color: #000 !important;
         }
+        .amt-pos, .amt-neg, .stat-value, .company-name, .report-title h3 { color: #000 !important; }
     }
     body {
         background: #e8eef5;

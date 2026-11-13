@@ -7,12 +7,25 @@
             'to_date' => $report['meta']['to'],
         ])
         : '#';
+    $pdfHref = ($report && $count > 0)
+        ? route('reports.market-voucher.pdf', [
+            'area' => $report['meta']['area_code'],
+            'from_date' => $report['meta']['from'],
+            'to_date' => $report['meta']['to'],
+        ])
+        : '#';
 @endphp
 
 <div class="card-header mv-card-head py-2 d-flex flex-wrap justify-content-between align-items-center gap-2">
   <h5 class="mb-0"><i class="bi bi-table me-2"></i>Market Voucher</h5>
   <div class="d-flex flex-wrap align-items-center gap-2">
     <span class="badge bg-light text-dark" id="mvCustomerCount">{{ $count }} customers</span>
+    <a id="btnMvPdf"
+       class="btn btn-sm btn-danger fw-semibold {{ $count > 0 ? '' : 'd-none' }}"
+       title="Download PDF"
+       href="{{ $pdfHref }}">
+      <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+    </a>
     <a id="btnMvPrint"
        target="_blank"
        rel="noopener"

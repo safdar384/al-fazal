@@ -19,6 +19,7 @@
                 margin: 0;
                 padding: 0;
                 background: #fff !important;
+                color: #000 !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
@@ -29,20 +30,28 @@
                 margin: 0;
                 padding: 0;
                 max-width: 100%;
+                color: #000 !important;
+            }
+            .ledger-container, .ledger-container * {
+                color: #000 !important;
+                text-shadow: none !important;
             }
             .mv-report-table thead th {
-                background: #0f2747 !important;
-                color: #fff !important;
+                background: #fff !important;
+                color: #000 !important;
+                border-bottom: 2pt solid #000 !important;
             }
-            .mv-report-table tbody tr:nth-child(even) td {
-                background: #f4f7fb !important;
-            }
+            .mv-report-table tbody tr:nth-child(even) td,
             .mv-report-table tfoot td {
-                background: #e8eef5 !important;
+                background: #fff !important;
+                color: #000 !important;
             }
             .meta-bar, .meta-box {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
+                color: #000 !important;
+                background: #fff !important;
+                border-color: #000 !important;
             }
         }
         body {
@@ -170,7 +179,7 @@
             text-align: center;
             font-size: 0.65rem;
         }
-        .btn-print, .btn-back {
+        .btn-print, .btn-back, .btn-pdf {
             position: fixed;
             bottom: 24px;
             padding: 9px 18px;
@@ -180,6 +189,7 @@
             border-radius: 4px;
         }
         .btn-back { left: 24px; }
+        .btn-pdf { right: 140px; }
         .btn-print { right: 24px; background: #0f2747; border-color: #0f2747; }
         .btn-print:hover { background: #1a4a8a; border-color: #1a4a8a; }
     </style>
@@ -231,6 +241,9 @@
     <button type="button" class="btn btn-secondary btn-back no-print" onclick="window.close()">
         <i class="bi bi-x-lg"></i> Close
     </button>
+    <a href="{{ route('reports.market-voucher.pdf', request()->query()) }}" class="btn btn-danger btn-pdf no-print">
+        <i class="bi bi-file-earmark-pdf"></i> PDF
+    </a>
     <button type="button" onclick="window.print()" class="btn btn-primary btn-print no-print">
         <i class="bi bi-printer"></i> Print Report
     </button>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\DownloadsDomPdf;
 use App\Models\CustomerProductRate;
 use App\Models\NewCustomer;
 use App\Models\newProduct;
@@ -12,9 +13,12 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use InvalidArgumentException;
+use Symfony\Component\HttpFoundation\Response;
 
 class PurchaseInvoiceController extends Controller
 {
+    use DownloadsDomPdf;
+
     public function __construct(
         protected PurchaseInvoiceService $purchases,
         protected PurchaseReturnService $purchaseReturns
@@ -139,6 +143,38 @@ class PurchaseInvoiceController extends Controller
         ]);
     }
 
+    public function pdf(string $invoiceNo): Response
+    {
+        $invoice = PurchaseInvoice::query()
+            ->with(['items', 'payments', 'supplier'])
+            ->where('invoiceNo', $invoiceNo)
+            ->firstOrFail();
+
+        $transport = null;
+        if ($invoice->transportCode) {
+            $transport = NewCustomer::query()
+                ->where('custCode', $invoice->transportCode)
+                ->first(['custCode', 'custName', 'bussnessName', 'custCity']);
+        }
+
+        $transportDisplayName = trim((string) (
+            ($transport->bussnessName ?? null)
+            ?: ($transport->custName ?? null)
+            ?: ($invoice->transportName ?? '')
+        ));
+
+        return $this->downloadDomPdf(
+            'Pages.Purchase.purchaseInvoicePreviewPdf',
+            [
+                'invoice' => $invoice,
+                'supplier' => $invoice->supplier,
+                'transport' => $transport,
+                'transportDisplayName' => $transportDisplayName !== '' ? $transportDisplayName : null,
+            ],
+            'purchase-invoice-'.$invoiceNo.'.pdf'
+        );
+    }
+
     public function getAllInvoices(Request $request)
     {
         $isReturn = $request->query('invoice_type') === 'return'
@@ -159,7 +195,7 @@ class PurchaseInvoiceController extends Controller
         ]);
     }
 
-    public function printInvoices(Request $request): View
+    public function printInvoices(Request $request): View|Response
     {
         $isReturn = $request->query('invoice_type') === 'return'
             || $request->query('purchase_type') === 'return';
@@ -167,6 +203,16 @@ class PurchaseInvoiceController extends Controller
         $invoices = $isReturn
             ? $this->purchaseReturns->listReturnsForPrint($request)
             : $this->purchases->listForPrint($request);
+
+        if ($request->boolean('download_pdf')) {
+            return $this->downloadDomPdf(
+                'Pages.Purchase.purchaseSummaryPdf',
+                compact('invoices'),
+                'purchase-summary-'.now()->format('YmdHis').'.pdf',
+                'a4',
+                'landscape'
+            );
+        }
 
         return view('Pages.Purchase.purchaseSummaryPrint', compact('invoices'));
     }

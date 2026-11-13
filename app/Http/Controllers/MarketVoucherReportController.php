@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\DownloadsDomPdf;
 use App\Support\MarketVoucherReport;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class MarketVoucherReportController extends Controller
 {
+    use DownloadsDomPdf;
+
     public function index(Request $request): View
     {
         $range = $this->resolveDateRange($request);
@@ -71,17 +75,18 @@ class MarketVoucherReportController extends Controller
             'report' => $report,
         ])->render();
 
-        $printUrl = route('reports.market-voucher.print', [
+        $query = [
             'area' => $areaCode,
             'from_date' => $range['from'],
             'to_date' => $range['to'],
-        ]);
+        ];
 
         return response()->json([
             'success' => true,
             'html' => $html,
             'count' => $report['rows']->count(),
-            'print_url' => $printUrl,
+            'print_url' => route('reports.market-voucher.print', $query),
+            'pdf_url' => route('reports.market-voucher.pdf', $query),
             'from_date' => $range['from'],
             'to_date' => $range['to'],
             'area' => $areaCode,
@@ -107,6 +112,33 @@ class MarketVoucherReportController extends Controller
             'report' => $report,
             'companyName' => config('app.name', 'TradeGate'),
         ]);
+    }
+
+    public function pdf(Request $request): Response
+    {
+        $request->validate([
+            'area' => 'required|string',
+            'from_date' => 'required|date',
+            'to_date' => 'required|date',
+        ]);
+
+        $range = $this->resolveDateRange($request);
+        $report = MarketVoucherReport::build(
+            $request->input('area'),
+            $range['from'],
+            $range['to']
+        );
+
+        return $this->downloadDomPdf(
+            'reports.market-voucher.pdf',
+            [
+                'report' => $report,
+                'companyName' => config('app.name', 'TradeGate'),
+            ],
+            'market-voucher-'.$range['from'].'-'.$range['to'].'.pdf',
+            'a4',
+            'landscape'
+        );
     }
 
     /**

@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\DownloadsDomPdf;
 use App\Services\BiltyGudsReportService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class BiltyGudsReportController extends Controller
 {
+    use DownloadsDomPdf;
+
     public function __construct(
         protected BiltyGudsReportService $reports
     ) {}
@@ -66,6 +70,25 @@ class BiltyGudsReportController extends Controller
             'report' => $report,
             'companyName' => config('app.name', 'TradeGate'),
         ]);
+    }
+
+    public function pdf(Request $request): Response
+    {
+        $range = $this->reports->resolveDateRange($request);
+        $filters = $this->reports->resolveFilters($request);
+        $report = $this->reports->build($range, $filters);
+
+        return $this->downloadDomPdf(
+            'reports.bilty-guds.pdf',
+            [
+                'fromDate' => $range['from'],
+                'toDate' => $range['to'],
+                'filters' => $filters,
+                'report' => $report,
+                'companyName' => config('app.name', 'TradeGate'),
+            ],
+            'bilty-guds-'.$range['from'].'-'.$range['to'].'.pdf'
+        );
     }
 
     public function bulkDelivered(Request $request): JsonResponse

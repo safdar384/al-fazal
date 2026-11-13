@@ -77,6 +77,8 @@ class SupplierLedgerController extends Controller
         );
 
         $supplierName = $this->resolveSupplierName($supplierCode);
+        $periodText = Carbon::parse($fromDate)->format('d-M-Y').' to '.Carbon::parse($toDate)->format('d-M-Y');
+
         $viewData = array_merge($this->baseViewData(), [
             'ledgerRows' => collect($built['rows']),
             'summary' => $built['summary'],
@@ -85,6 +87,7 @@ class SupplierLedgerController extends Controller
             'fromDate' => $fromDate,
             'toDate' => $toDate,
             'transactionType' => $transactionType,
+            'periodText' => $periodText,
             'isGenerated' => true,
             'balanceLabel' => $built['summary']['balance_label'],
         ]);
@@ -118,7 +121,7 @@ class SupplierLedgerController extends Controller
         return response()->view('Pages.customerAccount.supplierLedger', $viewData);
     }
 
-    public function preview(Request $request, string $supplierCode): View
+    public function preview(Request $request, string $supplierCode): View|Response
     {
         $validated = $request->validate([
             'from_date' => 'required|date',
@@ -143,7 +146,7 @@ class SupplierLedgerController extends Controller
 
         $periodText = Carbon::parse($fromDate)->format('d-M-Y').' to '.Carbon::parse($toDate)->format('d-M-Y');
 
-        return view('Pages.customerAccount.supplierLedgerPreview', [
+        $viewData = [
             'ledgerRows' => collect($built['rows']),
             'summary' => $built['summary'],
             'selectedSupplierCode' => $supplierCode,
@@ -152,7 +155,20 @@ class SupplierLedgerController extends Controller
             'toDate' => $toDate,
             'transactionType' => $transactionType,
             'periodText' => $periodText,
-        ]);
+            'balanceLabel' => $built['summary']['balance_label'] ?? 'Payable Balance',
+        ];
+
+        if ($request->boolean('download_pdf')) {
+            if (! $this->pdfAvailable()) {
+                abort(503, 'PDF package is not installed.');
+            }
+
+            return Pdf::loadView('Pages.customerAccount.supplierLedgerPdf', $viewData)
+                ->setPaper('a4', 'landscape')
+                ->download('supplier-ledger-'.$supplierCode.'-'.now()->format('YmdHis').'.pdf');
+        }
+
+        return view('Pages.customerAccount.supplierLedgerPreview', $viewData);
     }
 
     protected function baseViewData(): array

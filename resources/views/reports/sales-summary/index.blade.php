@@ -119,8 +119,9 @@
 
   @media print {
     .app-sidebar, .app-header, .app-content-header .breadcrumb, .btn, button, .no-print, .ssr-nav-tabs { display: none !important; }
-    body, .app-main { margin: 0; padding: 0; }
+    body, .app-main { margin: 0; padding: 0; color: #000 !important; }
     .card { box-shadow: none !important; border: none !important; }
+    .app-main, .app-main * { color: #000 !important; text-shadow: none !important; }
   }
 </style>
 
@@ -224,12 +225,22 @@
 
     function syncPrint(params) {
         const printLink = document.getElementById('ssrPrint');
-        if (!printLink) return;
-        const printParams = new URLSearchParams(params);
-        printParams.delete('page');
-        printParams.delete('fragment');
-        printParams.set('print', '1');
-        printLink.href = form.action + '?' + printParams.toString();
+        const pdfLink = document.getElementById('ssrPdf');
+        const baseParams = new URLSearchParams(params);
+        baseParams.delete('page');
+        baseParams.delete('fragment');
+        baseParams.delete('download_pdf');
+        baseParams.delete('print');
+        if (printLink) {
+            const printParams = new URLSearchParams(baseParams);
+            printParams.set('print', '1');
+            printLink.href = form.action + '?' + printParams.toString();
+        }
+        if (pdfLink) {
+            const pdfParams = new URLSearchParams(baseParams);
+            pdfParams.set('download_pdf', '1');
+            pdfLink.href = form.action + '?' + pdfParams.toString();
+        }
     }
 
     function applyParamsToForm(params) {
@@ -289,7 +300,7 @@
     document.addEventListener('click', function (e) {
         const link = e.target.closest('#ssrLive a');
         if (!link) return;
-        if (link.id === 'ssrPrint' || link.getAttribute('target') === '_blank') return;
+        if (link.id === 'ssrPrint' || link.id === 'ssrPdf' || link.getAttribute('target') === '_blank') return;
         const url = new URL(link.href, window.location.origin);
         if (url.pathname !== new URL(form.action, window.location.origin).pathname) return;
         e.preventDefault();

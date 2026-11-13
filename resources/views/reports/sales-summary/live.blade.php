@@ -83,6 +83,9 @@
                     <i class="bi bi-table me-2"></i>{{ $tabTitle }}
                 </h6>
                 <div class="d-flex flex-wrap align-items-center gap-2">
+                    <a id="ssrPdf" href="{{ route('reports.sales-summary', array_merge($queryBase, ['download_pdf' => 1])) }}" class="btn btn-sm btn-danger">
+                        <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+                    </a>
                     <a id="ssrPrint" href="{{ route('reports.sales-summary', array_merge($queryBase, ['print' => 1])) }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-light">
                         <i class="bi bi-printer me-1"></i>Print Report
                     </a>

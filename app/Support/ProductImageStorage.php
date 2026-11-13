@@ -174,7 +174,24 @@ class ProductImageStorage
             return null;
         }
 
-        return Storage::disk(self::DISK)->url($path);
+        // Only serve files under products/ (safety for media route)
+        if (! str_starts_with($path, self::PRODUCT_DIR.'/')) {
+            return null;
+        }
+
+        // Dedicated media URL — works even when public/storage symlink/junction is broken.
+        // Avoid Storage::url()/APP_URL absolute links which break across localhost vs vhost.
+        return url('/media/product/'.$path);
+    }
+
+    /**
+     * True when the file exists on the public disk (after storage:link / junction).
+     */
+    public static function exists(?string $path): bool
+    {
+        $path = self::normalizeRelativePath((string) $path);
+
+        return $path !== '' && Storage::disk(self::DISK)->exists($path);
     }
 
     public static function normalizeRelativePath(string $path): string

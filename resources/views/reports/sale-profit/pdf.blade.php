@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <title>{{ $config['title'] }}</title>
     <style>
-        body { font-family: DejaVu Sans, sans-serif; font-size: 10px; color: #1a1a1a; }
+        body { font-family: DejaVu Sans, sans-serif; font-size: 10px; color: #000; }
         h2 { margin: 0 0 6px; font-size: 14px; color: #0f2747; text-align: center; }
-        .meta { margin-bottom: 8px; font-size: 9px; color: #5a6a7a; text-align: center; }
+        .meta { margin-bottom: 8px; font-size: 9px; color: #000; text-align: center; }
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
         th, td { border: 1px solid #cfd8e3; padding: 3px 4px; }
-        th { background: #0f2747; color: #fff; font-size: 8px; text-transform: uppercase; }
+        th { background: #fff; color: #000; border-bottom: 2px solid #000; font-size: 8px; text-transform: uppercase; }
         td { font-size: 8.5px; }
         .text-end { text-align: right; }
         .text-center { text-align: center; }

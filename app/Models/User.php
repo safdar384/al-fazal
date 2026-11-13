@@ -10,6 +10,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements MustVerifyEmailContract
 {
@@ -33,7 +34,7 @@ class User extends Authenticatable implements MustVerifyEmailContract
     }
 
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, MustVerifyEmail, Notifiable;
+    use HasApiTokens, HasFactory, MustVerifyEmail, Notifiable;
 
     /**
      * @var list<string>
@@ -234,7 +235,7 @@ class User extends Authenticatable implements MustVerifyEmailContract
         }
 
         // Home / workspace landing + navbar chrome — always open for signed-in users
-        if ($request->is('/', 'home', 'dashboard', 'api/navbar*')) {
+        if ($request->is('/', 'home', 'dashboard', 'api/navbar*', 'api/*')) {
             return true;
         }
 

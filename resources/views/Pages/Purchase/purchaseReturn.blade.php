@@ -45,6 +45,17 @@
     position: relative !important;
     overflow: visible !important;
   }
+  .product-search-thumb {
+    width: 36px;
+    height: 36px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .product-search-thumb-empty {
+    width: 36px;
+    height: 36px;
+    font-size: 0.85rem;
+  }
   .condition-select.condition-good { border-color: #198754; color: #198754; font-weight: 600; }
   .condition-select.condition-damage { border-color: #dc3545; color: #dc3545; font-weight: 600; }
   .row-damage td { background: #fff5f5 !important; }
@@ -165,7 +176,8 @@
                                     data-rate="{{ $product->purchaseRate ?? $product->costRate }}"
                                     data-cost="{{ $product->costRate }}"
                                     data-name="{{ $product->productName }}"
-                                    data-company="{{ $product->companyName }}">
+                                    data-company="{{ $product->companyName }}"
+                                    data-image="{{ $product->image_url }}">
                               {{ $product->productName }} - {{ $product->companyName }}
                             </option>
                           @endforeach
@@ -434,7 +446,14 @@ $(function () {
       const name = ($(this).data('name') || '').toString();
       const company = ($(this).data('company') || '').toString();
       const hay = (name + ' ' + company + ' ' + code).toLowerCase();
-      if (!t || hay.includes(t)) list.push({ code, name, company, rate: $(this).data('rate'), cost: $(this).data('cost') });
+      if (!t || hay.includes(t)) list.push({
+        code,
+        name,
+        company,
+        rate: $(this).data('rate'),
+        cost: $(this).data('cost'),
+        image: ($(this).attr('data-image') || '').toString()
+      });
     });
     return list;
   }
@@ -446,7 +465,10 @@ $(function () {
       return;
     }
     list.slice(0, 20).forEach((p, i) => {
-      $dd.append(`<button type="button" class="dropdown-item ${i === 0 ? 'active' : ''}" data-code="${p.code}"><strong>${p.name}</strong><div class="small">${p.company || p.code}</div></button>`);
+      const thumb = p.image
+        ? `<img src="${p.image}" alt="" class="product-search-thumb rounded border" onerror="this.style.display='none'">`
+        : `<span class="product-search-thumb product-search-thumb-empty rounded border d-inline-flex align-items-center justify-content-center bg-light text-muted"><i class="bi bi-image"></i></span>`;
+      $dd.append(`<button type="button" class="dropdown-item d-flex align-items-center gap-2 ${i === 0 ? 'active' : ''}" data-code="${p.code}">${thumb}<span class="min-w-0"><strong class="d-block text-truncate">${p.name}</strong><div class="small text-truncate">${p.company || p.code}</div></span></button>`);
     });
     $dd.show();
   }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\DownloadsDomPdf;
 use App\Support\ProfitLossReport;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -10,11 +11,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ProfitLossReportController extends Controller
 {
+    use DownloadsDomPdf;
+
     public function __construct(
         protected ProfitLossReport $profitLoss
     ) {}
 
-    public function statement(Request $request): View
+    public function statement(Request $request): View|Response
     {
         $range = $this->profitLoss->resolveDateRange($request);
         $figures = $this->profitLoss->computeForPeriod($range['from'], $range['to']);
@@ -25,6 +28,14 @@ class ProfitLossReportController extends Controller
             'figures' => $figures,
             'isGenerated' => true,
         ];
+
+        if ($request->boolean('download_pdf')) {
+            return $this->downloadDomPdf(
+                'reports.profit-loss.pdf',
+                $viewData,
+                'profit-loss-'.$range['from'].'-'.$range['to'].'.pdf'
+            );
+        }
 
         if ($request->boolean('fragment')) {
             return view('reports.profit-loss.statement-live', $viewData);

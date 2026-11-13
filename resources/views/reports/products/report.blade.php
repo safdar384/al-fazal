@@ -12,13 +12,14 @@
         @media print {
             .no-print { display: none !important; }
             html, body {
-                width: 297mm; margin: 0; padding: 0; background: #fff !important;
+                width: 297mm; margin: 0; padding: 0; background: #fff !important; color: #000 !important;
                 -webkit-print-color-adjust: exact; print-color-adjust: exact;
             }
             .ledger-container {
                 box-shadow: none !important; border: none !important; border-radius: 0 !important;
                 margin: 0; padding: 0; max-width: 100%;
             }
+            .ledger-container, .ledger-container * { color: #000 !important; text-shadow: none !important; }
             .ledger-table thead th { background: #0f2747 !important; color: #fff !important; }
             .ledger-table tbody tr:nth-child(even) td { background: #f4f7fb !important; }
             .ledger-table tfoot td { background: #e8eef5 !important; }

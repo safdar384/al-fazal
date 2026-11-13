@@ -234,7 +234,10 @@
             <div class="d-flex flex-wrap align-items-center gap-2 no-print">
               <button type="button" class="btn btn-sm btn-outline-light" id="btnPrintReport">
               <i class="bi bi-printer me-1"></i>Print Report
-            </button>
+              </button>
+              <button type="button" class="btn btn-sm btn-danger" id="btnPdfReport">
+                <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+              </button>
               <a href="{{ route('reports.purchases-summary') }}" class="btn btn-sm btn-outline-light">
               <i class="bi bi-clipboard-data me-1"></i>Report
             </a>
@@ -699,6 +702,12 @@ $(document).ready(function () {
   $('#btnPrintReport').on('click', function () {
     const params = new URLSearchParams(buildFilters()).toString();
     window.open('{{ url('/purchase/invoices/print') }}' + (params ? ('?' + params) : ''), '_blank');
+  });
+
+  $('#btnPdfReport').on('click', function () {
+    const params = new URLSearchParams(buildFilters());
+    params.set('download_pdf', '1');
+    window.open('{{ url('/purchase/invoices/print') }}?' + params.toString(), '_blank');
   });
 
   loadInvoices(buildFilters(), 1);

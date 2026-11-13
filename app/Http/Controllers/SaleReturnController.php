@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\DownloadsDomPdf;
 use App\Models\NewCustomer;
 use App\Models\SaleReturn;
 use App\Services\SaleInvoiceService;
@@ -9,9 +10,12 @@ use App\Services\SaleReturnService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\Response;
 
 class SaleReturnController extends Controller
 {
+    use DownloadsDomPdf;
+
     public function __construct(
         protected SaleReturnService $returns,
         protected SaleInvoiceService $saleInvoices
@@ -47,6 +51,24 @@ class SaleReturnController extends Controller
             ->first();
 
         return view('Pages.Sale.returnPreview', compact('saleReturn', 'customer'));
+    }
+
+    public function pdf(string $returnNo): Response
+    {
+        $saleReturn = SaleReturn::query()
+            ->with('items')
+            ->where('returnNo', $returnNo)
+            ->firstOrFail();
+
+        $customer = NewCustomer::query()
+            ->where('custCode', $saleReturn->customerCode)
+            ->first();
+
+        return $this->downloadDomPdf(
+            'Pages.Sale.returnPreviewPdf',
+            compact('saleReturn', 'customer'),
+            'sale-return-'.$returnNo.'.pdf'
+        );
     }
 
     public function getProductDetails(string $productCode): JsonResponse

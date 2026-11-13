@@ -74,9 +74,19 @@ class NewCustomerController extends Controller
                     'success' => true,
                     'message' => 'Customer created successfully!',
                     'customer' => [
-                        'id' => $customer->id,
+                        'id' => $customer->custCode,
                         'custCode' => $customer->custCode,
+                        'code' => $customer->custCode,
                         'custName' => $customer->custName,
+                        'name' => $customer->custName,
+                        'business' => $customer->bussnessName ?? '',
+                        'city' => $customer->custCity ?? '',
+                        'phone' => $customer->custContect ?? '',
+                        'address' => $customer->custAddress ?? '',
+                        'area' => $customer->custArea ?? '',
+                        'discount' => (float) ($customer->custdiscount ?? 0),
+                        'text' => trim(($customer->bussnessName ?: $customer->custName).($customer->custCity ? ' — '.$customer->custCity : '')),
+                        'label' => trim(($customer->bussnessName ?: $customer->custName).($customer->custCity ? ' — '.$customer->custCity : '')),
                     ],
                 ]);
             }

@@ -139,6 +139,9 @@
               <button type="button" class="btn btn-outline-primary btn-sm" id="btnPrintReport" title="Print Report">
                 <i class="bi bi-printer me-1"></i>Print
               </button>
+              <button type="button" class="btn btn-danger btn-sm" id="btnPdfReport" title="Download PDF">
+                <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+              </button>
             </div>
           </div>
         </div>
@@ -621,19 +624,28 @@ $(document).ready(function() {
     $('#activeFilters').html(html || '<small class="text-muted">No filters applied</small>');
   }
 
-  $('#btnPrintReport').on('click', function() {
+  function expenseReportUrl(downloadPdf) {
     const expenseCode = $('#filterExpenseCode').val();
     const fromDate = $('#fromDate').val();
     const toDate = $('#toDate').val();
     const category = $('#filterCategory').val();
 
     let url = '{{ route("expense.report.print") }}?';
-    if(expenseCode) url += `expenseCode=${expenseCode}&`;
-    if(fromDate) url += `fromDate=${fromDate}&`;
-    if(toDate) url += `toDate=${toDate}&`;
-    if(category) url += `category=${category}&`;
+    if (expenseCode) url += `expenseCode=${expenseCode}&`;
+    if (fromDate) url += `fromDate=${fromDate}&`;
+    if (toDate) url += `toDate=${toDate}&`;
+    if (category) url += `category=${category}&`;
+    if (downloadPdf) url += 'download_pdf=1&';
 
-    window.open(url, '_blank');
+    return url;
+  }
+
+  $('#btnPrintReport').on('click', function() {
+    window.open(expenseReportUrl(false), '_blank');
+  });
+
+  $('#btnPdfReport').on('click', function() {
+    window.open(expenseReportUrl(true), '_blank');
   });
 
   $(document).on('click', '.btnEditLedger', function () {

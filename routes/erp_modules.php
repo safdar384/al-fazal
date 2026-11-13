@@ -51,6 +51,11 @@ use App\Http\Controllers\SupplierTransactionController;
 use App\Http\Controllers\UnitPerPackController;
 use Illuminate\Support\Facades\Route;
 
+// Product images (no auth) — used by <img> tags; avoids broken public/storage symlink on Windows
+Route::get('/media/product/{path}', [newProductController::class, 'media'])
+    ->where('path', '.*')
+    ->name('product.media');
+
 Route::middleware(['auth'])->group(function () {
     // Dashboard & navbar
     Route::get('/', fn () => redirect()->route('dashboard'));
@@ -141,6 +146,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/sale/invoice/product/{productCode}', [SaleInvoiceController::class, 'getProductDetails']);
     Route::post('/sale/invoice/store', [SaleInvoiceController::class, 'store']);
     Route::get('/sale/invoice/{invoiceNo}/preview', [SaleInvoiceController::class, 'preview'])->name('sale.invoice.preview');
+    Route::get('/sale/invoice/{invoiceNo}/pdf', [SaleInvoiceController::class, 'pdf'])->name('sale.invoice.pdf');
     Route::get('/sale/invoice/edit/{invoiceNo}', [SaleInvoiceController::class, 'edit']);
     Route::put('/sale/invoice/update/{invoiceNo}', [SaleInvoiceController::class, 'update']);
     Route::delete('/sale/invoice/delete/{invoiceNo}', [SaleInvoiceController::class, 'deleteInvoice']);
@@ -156,6 +162,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/sale/return/update/{returnNo}', [SaleReturnController::class, 'update'])->name('sale.return.update');
     Route::delete('/sale/return/delete/{returnNo}', [SaleReturnController::class, 'destroy'])->name('sale.return.delete');
     Route::get('/sale/return/{returnNo}/preview', [SaleReturnController::class, 'preview'])->name('sale.return.preview');
+    Route::get('/sale/return/{returnNo}/pdf', [SaleReturnController::class, 'pdf'])->name('sale.return.pdf');
 
     // Cash sale
     Route::get('/cash-sale', [CashSaleController::class, 'index']);
@@ -183,10 +190,14 @@ Route::middleware(['auth'])->group(function () {
 
     // Orders
     Route::get('/new-order', [OrderController::class, 'index'])->name('order.index');
+    Route::get('/order/customers/search', [OrderController::class, 'searchCustomers'])->name('order.customers.search');
+    Route::get('/order/products/search', [OrderController::class, 'searchProducts'])->name('order.products.search');
+    Route::get('/order/product/{productCode}', [OrderController::class, 'productDetails'])->name('order.product.details');
     Route::post('/order/store', [OrderController::class, 'store'])->name('order.store');
     Route::get('/order-summary', [OrderController::class, 'summary'])->name('order.summary');
     Route::get('/order-summary/print', [OrderController::class, 'printSummary'])->name('order.summary.print');
     Route::get('/order/{orderNo}/preview', [OrderController::class, 'preview'])->name('order.preview');
+    Route::get('/order/{orderNo}/pdf', [OrderController::class, 'pdf'])->name('order.pdf');
     Route::get('/order/{orderNo}/edit', [OrderController::class, 'edit'])->name('order.edit');
     Route::put('/order/{orderNo}', [OrderController::class, 'update'])->name('order.update');
     Route::post('/order/{orderNo}/convert-to-invoice', [OrderController::class, 'convertToInvoice'])->name('order.convert');
@@ -209,6 +220,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/purchase/invoice/product/{productCode}', [PurchaseInvoiceController::class, 'getProductDetails']);
     Route::post('/purchase/invoice/store', [PurchaseInvoiceController::class, 'store']);
     Route::get('/purchase/invoice/{invoiceNo}/preview', [PurchaseInvoiceController::class, 'preview'])->name('purchaseInvoice.preview');
+    Route::get('/purchase/invoice/{invoiceNo}/pdf', [PurchaseInvoiceController::class, 'pdf'])->name('purchaseInvoice.pdf');
     Route::get('/purchase/invoice/edit/{invoiceNo}', [PurchaseInvoiceController::class, 'edit']);
     Route::put('/purchase/invoice/update/{invoiceNo}', [PurchaseInvoiceController::class, 'update']);
     Route::delete('/purchase/invoice/delete/{invoiceNo}', [PurchaseInvoiceController::class, 'deleteInvoice']);
@@ -223,6 +235,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/purchase/return/update/{returnNo}', [PurchaseReturnController::class, 'update'])->name('purchase.return.update');
     Route::delete('/purchase/return/delete/{returnNo}', [PurchaseReturnController::class, 'destroy'])->name('purchase.return.delete');
     Route::get('/purchase/return/{returnNo}/preview', [PurchaseReturnController::class, 'preview'])->name('purchase.return.preview');
+    Route::get('/purchase/return/{returnNo}/pdf', [PurchaseReturnController::class, 'pdf'])->name('purchase.return.pdf');
 
     Route::get('/reports/purchases-summary', [PurchaseSummaryReportController::class, 'index'])->name('reports.purchases-summary');
 
@@ -335,6 +348,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reports/bilty-guds', [BiltyGudsReportController::class, 'index'])->name('reports.bilty-guds');
     Route::get('/reports/bilty-guds/data', [BiltyGudsReportController::class, 'data'])->name('reports.bilty-guds.data');
     Route::get('/reports/bilty-guds/print', [BiltyGudsReportController::class, 'print'])->name('reports.bilty-guds.print');
+    Route::get('/reports/bilty-guds/pdf', [BiltyGudsReportController::class, 'pdf'])->name('reports.bilty-guds.pdf');
     Route::post('/reports/bilty-guds/delivered-bulk', [BiltyGudsReportController::class, 'bulkDelivered'])
         ->name('reports.bilty-guds.delivered-bulk');
     Route::get('/reports/sales-summary', [SalesSummaryReportController::class, 'index'])->name('reports.sales-summary');
@@ -369,6 +383,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reports/market-voucher', [MarketVoucherReportController::class, 'index'])->name('reports.market-voucher');
     Route::get('/reports/market-voucher/data', [MarketVoucherReportController::class, 'data'])->name('reports.market-voucher.data');
     Route::get('/reports/market-voucher/print', [MarketVoucherReportController::class, 'print'])->name('reports.market-voucher.print');
+    Route::get('/reports/market-voucher/pdf', [MarketVoucherReportController::class, 'pdf'])->name('reports.market-voucher.pdf');
 
     // Product reports
     Route::get('/reports/products/all', [ProductReportController::class, 'all'])->name('reports.products.all');

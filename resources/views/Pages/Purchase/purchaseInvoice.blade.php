@@ -891,7 +891,7 @@ $(document).ready(function() {
       filtered.slice(0, 10).forEach((p, idx) => {
         const rateDisplay = supplierProducts.length > 0 ? `Rs.${parseFloat(p.rate).toFixed(2)}` : '';
         const thumb = p.image
-          ? `<img src="${p.image}" alt="" class="product-search-thumb rounded border">`
+          ? `<img src="${p.image}" alt="" class="product-search-thumb rounded border" onerror="this.style.display='none'">`
           : `<span class="product-search-thumb product-search-thumb-empty rounded border d-inline-flex align-items-center justify-content-center bg-light text-muted"><i class="bi bi-image"></i></span>`;
         html += `<a class="dropdown-item d-flex align-items-center gap-2 ${idx===0?'active':''}" href="#" data-code="${p.code}" data-rate="${p.rate}">
           ${thumb}

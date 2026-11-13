@@ -22,8 +22,13 @@
             .no-print { display: none !important; }
             html, body {
                 background: #fff !important;
+                color: #000 !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
+            }
+            .sheet, .sheet * {
+                color: #000 !important;
+                text-shadow: none !important;
             }
             .sheet {
                 box-shadow: none !important;
@@ -33,6 +38,9 @@
                 padding: 0;
             }
             .bg-entry { break-inside: avoid; }
+            .bg-guds-title, .bg-receiver-address, .bg-metric-val, .report-title, .report-meta {
+                color: #000 !important;
+            }
         }
         body {
             background: #e7edf4;
@@ -179,6 +187,9 @@
 </head>
 <body>
     <div class="toolbar no-print">
+        <a class="btn btn-danger btn-sm" href="{{ route('reports.bilty-guds.pdf', request()->query()) }}">
+            <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+        </a>
         <button type="button" class="btn btn-dark btn-sm" onclick="window.print()">
             <i class="bi bi-printer me-1"></i>Print
         </button>

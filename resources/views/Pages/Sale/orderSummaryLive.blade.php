@@ -38,6 +38,9 @@
           <a href="{{ route('order.summary.print', $filterQuery) }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-light">
             <i class="bi bi-printer me-1"></i>Print Report
           </a>
+          <a href="{{ route('order.summary.print', array_merge($filterQuery, ['download_pdf' => 1])) }}" target="_blank" rel="noopener" class="btn btn-sm btn-danger">
+            <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+          </a>
           <a href="{{ route('order.index') }}" class="btn btn-sm btn-light fw-semibold">
             <i class="bi bi-plus-circle me-1"></i>New Order
           </a>

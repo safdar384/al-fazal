@@ -251,6 +251,9 @@
               <button type="button" class="btn btn-sm btn-outline-light" id="btnPrintReport">
                 <i class="bi bi-printer me-1"></i>Print Report
               </button>
+              <button type="button" class="btn btn-sm btn-danger" id="btnPdfReport">
+                <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+              </button>
               <a href="{{ url('/SaleInvoice') }}" class="btn btn-sm btn-light fw-semibold">
                 <i class="bi bi-plus-circle me-1"></i>New Invoice
               </a>
@@ -706,6 +709,13 @@ $(document).ready(function() {
     const params = new URLSearchParams(filters).toString();
     const printUrl = '{{ url("/sale/invoices/print") }}' + (params ? ('?' + params) : '');
     window.open(printUrl, '_blank');
+  });
+
+  $('#btnPdfReport').on('click', function () {
+    const filters = buildFilters();
+    const params = new URLSearchParams(filters);
+    params.set('download_pdf', '1');
+    window.open('{{ url("/sale/invoices/print") }}?' + params.toString(), '_blank');
   });
 
   $('#fromDate, #toDate').on('change', debounce(function () {

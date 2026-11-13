@@ -5,12 +5,12 @@
     <title>Sales Summary Report</title>
     <style>
         @page { size: A4 landscape; margin: 8mm; }
-        body { font-family: DejaVu Sans, sans-serif; font-size: 9px; color: #1f2937; }
+        body { font-family: DejaVu Sans, sans-serif; font-size: 9px; color: #000; }
         h1 { font-size: 14px; margin: 0 0 4px; }
-        .meta { font-size: 9px; color: #4b5563; margin-bottom: 8px; }
+        .meta { font-size: 9px; color: #000; margin-bottom: 8px; }
         .cards { width: 100%; margin-bottom: 8px; border-collapse: collapse; }
         .cards td { border: 1px solid #e5e7eb; padding: 4px 6px; text-align: center; }
-        .cards .label { font-size: 8px; color: #6b7280; }
+        .cards .label { font-size: 8px; color: #000; }
         .cards .val { font-size: 10px; font-weight: 700; }
         table.data { width: 100%; border-collapse: collapse; margin-top: 6px; }
         table.data th, table.data td { border: 1px solid #e5e7eb; padding: 2px 4px; vertical-align: top; }
